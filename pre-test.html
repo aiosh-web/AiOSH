@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AiOSH – Pre-test</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0a0a2e 0%, #1a1a5e 40%, #0d2137 100%);
+      color: #fff;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    .orb { position: fixed; border-radius: 50%; pointer-events: none; z-index: 0; }
+    .orb1 { width: 500px; height: 500px; background: radial-gradient(circle, rgba(99,102,241,0.25) 0%, transparent 70%); top: -150px; left: -150px; }
+    .orb2 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(34,211,238,0.15) 0%, transparent 70%); bottom: -100px; right: 5%; }
+    .orb3 { width: 300px; height: 300px; background: radial-gradient(circle, rgba(168,85,247,0.15) 0%, transparent 70%); top: 40%; left: 30%; }
+
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 36px; height: 68px;
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .nav-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+    .nav-logo {
+      width: 42px; height: 42px; border-radius: 50%;
+      background: rgba(99,102,241,0.25); border: 2px solid rgba(99,102,241,0.6);
+      display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;
+    }
+    .nav-logo img { width: 100%; height: 100%; object-fit: cover; }
+    .nav-logo-initials { font-size: 13px; font-weight: 700; color: #a5b4fc; letter-spacing: 0.5px; }
+    .nav-site-name { font-size: 18px; font-weight: 700; color: #fff; letter-spacing: 2px; }
+
+    .nav-links { display: flex; align-items: center; gap: 6px; list-style: none; }
+    .nav-links a, .nav-links button {
+      display: inline-flex; align-items: center; padding: 8px 16px;
+      font-size: 13.5px; font-weight: 500; color: rgba(255,255,255,0.7);
+      text-decoration: none; background: none; border: none;
+      border-radius: 10px; font-family: 'Inter', sans-serif; cursor: pointer;
+      transition: background 0.2s, color 0.2s; letter-spacing: 0.3px;
+    }
+    .nav-links a:hover, .nav-links button:hover { background: rgba(255,255,255,0.08); color: #fff; }
+    .nav-links a.active { background: rgba(99,102,241,0.25); color: #a5b4fc; border: 1px solid rgba(99,102,241,0.35); }
+    .signout-btn { color: rgba(252,165,165,0.85) !important; border: 1px solid rgba(239,68,68,0.25) !important; }
+    .signout-btn:hover { background: rgba(239,68,68,0.12) !important; color: #fca5a5 !important; }
+
+    .page {
+      position: relative; z-index: 1;
+      padding: 88px 48px 60px;
+      max-width: 1050px;
+      margin: 0 auto;
+    }
+
+    .page-header { margin-bottom: 36px; }
+
+    .breadcrumb {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 12px; color: rgba(255,255,255,0.4);
+      margin-bottom: 14px;
+    }
+    .breadcrumb a { color: #a5b4fc; text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+    .breadcrumb span { color: rgba(255,255,255,0.25); }
+
+    .page-tag {
+      display: inline-block; font-size: 11px; font-weight: 600;
+      color: #a5b4fc; background: rgba(99,102,241,0.2);
+      border: 1px solid rgba(99,102,241,0.35); border-radius: 20px;
+      padding: 4px 14px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 14px;
+    }
+
+    .page-title {
+      font-size: 32px; font-weight: 700; color: #fff;
+      margin-bottom: 8px; line-height: 1.2;
+    }
+
+    .page-title span {
+      background: linear-gradient(135deg, #a5b4fc, #8b5cf6);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+
+    .page-sub {
+      font-size: 14px; color: rgba(255,255,255,0.45);
+      line-height: 1.6; max-width: 620px;
+    }
+
+    .quiz-wrapper {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 24px;
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .quiz-content { padding: 34px; }
+
+    .quiz-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .quiz-module-label {
+      font-size: 12px;
+      letter-spacing: 1.2px;
+      font-weight: 700;
+      color: #a5b4fc;
+      text-transform: uppercase;
+    }
+
+    .quiz-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: rgba(255,255,255,0.70);
+      font-size: 12px;
+      border-radius: 999px;
+      padding: 8px 14px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .quiz-status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #2dd4bf;
+    }
+
+    .quiz-question-card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 20px;
+      padding: 28px;
+    }
+
+    .question-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .question-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #a5b4fc;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .question-count {
+      font-size: 12px;
+      color: rgba(255,255,255,0.5);
+      background: rgba(255,255,255,0.06);
+      border-radius: 999px;
+      padding: 7px 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .question-box {
+      min-height: 96px;
+      background: rgba(99,102,241,0.08);
+      border: 1px solid rgba(99,102,241,0.26);
+      border-radius: 14px;
+      padding: 24px;
+      font-size: 20px;
+      line-height: 1.55;
+      color: #eef2ff;
+      display: flex;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .choices {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(220px, 1fr));
+      gap: 14px;
+    }
+
+    .choice-option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 14px;
+      padding: 16px;
+      cursor: pointer;
+      color: rgba(255,255,255,0.85);
+      transition: background 0.2s, border-color 0.2s, transform 0.2s;
+    }
+
+    .choice-option:hover {
+      background: rgba(99,102,241,0.14);
+      border-color: rgba(165,180,252,0.4);
+      transform: translateY(-2px);
+    }
+
+    .choice-option input {
+      accent-color: #8b5cf6;
+    }
+
+    .choice-letter {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.14);
+      font-size: 11px;
+      font-weight: 700;
+      color: #c7d2fe;
+    }
+
+    .choice-label-text {
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .quiz-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      margin-top: 28px;
+      flex-wrap: wrap;
+    }
+
+    .btn-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 40px;
+      padding: 11px 20px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      text-decoration: none;
+      transition: transform 0.2s, background 0.2s, border-color 0.2s;
+    }
+
+    .btn-secondary {
+      color: rgba(255,255,255,0.84);
+      background: rgba(255,255,255,0.04);
+      border-color: rgba(255,255,255,0.15);
+    }
+
+    .btn-primary {
+      color: white;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border-color: rgba(165,180,252,0.36);
+    }
+
+    .btn:hover { transform: translateY(-2px); }
+
+    .quiz-result {
+      display: none;
+      margin-top: 22px;
+      padding: 16px;
+      border-radius: 14px;
+      background: rgba(34,197,94,0.12);
+      border: 1px solid rgba(34,197,94,0.34);
+      color: #b7f7d4;
+      font-size: 13px;
+    }
+
+    .quiz-result.show { display: block; }
+
+    .quiz-result {
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(255,255,255,0.16);
+      color: #e5e7eb;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .result-heading {
+      font-size: 15px;
+      font-weight: 700;
+      color: #b7f7d4;
+      margin-bottom: 6px;
+    }
+
+    .result-sub {
+      color: rgba(255,255,255,0.55);
+      margin-bottom: 16px;
+    }
+
+    @media (max-width: 700px) {
+      .page { padding: 88px 20px 40px; }
+      .quiz-content { padding: 20px; }
+      .choices { grid-template-columns: 1fr; }
+      .question-box { font-size: 17px; }
+    }
+
+    /* ─── MOBILE (<=480px) ─── */
+    @media (max-width: 480px) {
+      nav { padding: 0 10px; }
+      .nav-logo { width: 34px; height: 34px; }
+      .nav-links a, .nav-links button { padding: 7px 9px; font-size: 11.5px; }
+      .page { padding: 72px 14px 28px; }
+      .page-tag { font-size: 11px; }
+      .page-title { font-size: 22px; }
+      .quiz-content { padding: 16px; }
+      .quiz-question-card { padding: 18px 14px; }
+      .question-box { font-size: 17px; padding: 18px; }
+      .quiz-actions { flex-direction: column; align-items: stretch; }
+      .btn-row { width: 100%; }
+      .quiz-actions .btn { width: 100%; }
+      .chat-window { left: 12px; right: 12px; width: auto; max-width: none; }
+      .chat-bubble-btn { left: 16px; bottom: 20px; width: 52px; height: 52px; }
+      .modal { width: 92%; }
+    }
+  /* ─── ACCESSIBILITY IMPROVEMENTS ─── */
+
+    /* Skip to main content */
+    .skip-link {
+      position: fixed; top: -60px; left: 16px; z-index: 9999;
+      background: #6366f1; color: #fff;
+      padding: 12px 18px; border-radius: 10px;
+      font-size: 13px; font-weight: 600; text-decoration: none;
+      transition: top 0.2s ease;
+    }
+    .skip-link:focus-visible { top: 12px; }
+
+    /* Visible keyboard focus */
+    a:focus-visible, button:focus-visible, input:focus-visible,
+    select:focus-visible, textarea:focus-visible, summary:focus-visible {
+      outline: 3px solid #a5b4fc; outline-offset: 2px;
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.001s !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001s !important;
+        scroll-behavior: auto !important;
+      }
+    }
+
+    /* ─── MOBILE HAMBURGER MENU ─── */
+    .nav-toggle {
+      display: none;
+      flex-direction: column; justify-content: center; gap: 5px;
+      width: 42px; height: 42px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 10px; cursor: pointer; padding: 10px 9px;
+    }
+    .nav-toggle-bar {
+      display: block; width: 100%; height: 2px;
+      background: #fff; border-radius: 2px;
+      transition: transform 0.25s ease, opacity 0.25s ease;
+    }
+    .nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(2) { opacity: 0; }
+    .nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    @media (max-width: 700px) {
+      .nav-toggle { display: flex; }
+      .nav-links {
+        display: none;
+        position: absolute; top: 68px; left: 0; right: 0;
+        flex-direction: column; align-items: stretch;
+        background: rgba(10,10,46,0.97);
+        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        padding: 10px 16px 14px;
+        box-shadow: 0 18px 40px rgba(0,0,0,0.35);
+      }
+      .nav-links.open { display: flex; }
+      .nav-links li { width: 100%; }
+      .nav-links a, .nav-links button {
+        width: 100%; justify-content: center;
+        padding: 12px !important; font-size: 14px !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+
+  <nav aria-label="Main navigation">
+    <a class="nav-brand" href="landing.html">
+      <span class="nav-logo">
+        <img src="images/logo.png" alt="AiOSH Logo" />
+      </span>
+      <span class="nav-site-name">AiOSH</span>
+    </a>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
+      <span class="nav-toggle-bar"></span>
+      <span class="nav-toggle-bar"></span>
+      <span class="nav-toggle-bar"></span>
+    </button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="landing.html">Home</a></li>
+      <li><a href="course.html">Modules</a></li>
+      <li><a href="module-specific.html" class="active">Lessons</a></li>
+      <li><button class="signout-btn">Sign out</button></li>
+    </ul>
+  </nav>
+
+  <main class="page" id="main-content">
+    <header class="page-header">
+      <div class="breadcrumb">
+        <a href="landing.html">Home</a>
+        <span>/</span>
+        <a href="course.html">Modules</a>
+        <span>/</span>
+        <a href="module-specific.html">Lessons</a>
+        <span>/</span>
+        <span id="breadcrumb-pre-test">Pre-test</span>
+      </div>
+      <div class="page-tag" id="page-tag">Pre-test</div>
+      <h1 class="page-title"><span id="quiz-title">Module Pre-test</span></h1>
+      <p class="page-sub">Please answer the pre-test below to unlock the module lessons. This checks your prior knowledge before you begin.</p>
+    </header>
+
+    <section class="quiz-wrapper">
+      <div class="quiz-content">
+        <div class="quiz-header-row">
+          <div class="quiz-module-label" id="module-name">Module</div>
+          <div class="quiz-status">
+            <span class="quiz-status-dot"></span>
+            <span id="quiz-status-text">Pre-test in progress</span>
+          </div>
+        </div>
+
+        <section class="quiz-question-card">
+          <div class="question-top">
+            <div class="question-title" id="question-title">Question 1</div>
+            <div class="question-count" id="question-count">1 / 32</div>
+          </div>
+
+          <div class="question-box" id="question-box">
+            Pre-test question
+          </div>
+
+          <div class="choices" id="choices"></div>
+
+          <div class="quiz-result" id="quiz-result"></div>
+
+          <div class="quiz-actions">
+            <div class="btn-row">
+              <a class="btn btn-secondary" href="module-specific.html">Back to Lessons</a>
+            </div>
+            <div class="btn-row">
+              <button class="btn btn-secondary" id="prev-btn">Previous</button>
+              <button class="btn btn-primary" id="next-btn">Next Question</button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // ─── MOBILE NAV TOGGLE ────────────────────────────────────
+    (function initMobileNav() {
+      const toggle = document.getElementById('nav-toggle');
+      const menu = document.getElementById('nav-links');
+      if (!toggle || !menu) return;
+      const close = () => {
+        menu.classList.remove('open');
+        toggle.setAttribute('aria-expanded', 'false');
+        toggle.setAttribute('aria-label', 'Open menu');
+      };
+      toggle.addEventListener('click', () => {
+        const open = menu.classList.toggle('open');
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+      });
+      menu.querySelectorAll('a, button').forEach(el => el.addEventListener('click', close));
+      document.addEventListener('click', (e) => {
+        if (!document.querySelector('nav').contains(e.target)) close();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && menu.classList.contains('open')) {
+          close();
+          toggle.focus();
+        }
+      });
+    })();
+
+    // ─────────────────────────────────────────────────────────────
+    //  PRE-TEST QUESTIONS
+    //  ➤ REPLACE THESE PLACEHOLDER QUESTIONS BELOW with your actual
+    //    pre-test questions and choices. Same format as the module quiz:
+    //      { question: '...', choices: ['A','B','C','D'], answer: 'A' }
+    //    The 'choices' array holds the full text of each option and
+    //    'answer' is the letter of the correct choice (A, B, C or D).
+    //  This page is used for BOTH RSW and Scaffolding. If you need
+    //    different questions per module, see the note at the bottom
+    //    of this script (selectPreTestQuestions).
+    // ─────────────────────────────────────────────────────────────
+    const questions = [
+      { question: 'What is scaffolding primarily designed to provide?', choices: ['Permanent structural support', 'Safe access and working platforms at height', 'Permanent storage space', 'Temporary building walls'], answer: 'B' },
+      { question: 'Which construction activities commonly use scaffolding?', choices: ['Masonry, painting, plastering, and installation', 'Only excavation', 'Only road construction', 'Only demolition'], answer: 'A' },
+      { question: 'Which standards are identified as regulating scaffolding practices in the Philippines?', choices: ['TESDA NC II, DOLE OSHS, and DPWH Item 902', 'Traffic Code only', 'Electrical Code only', 'Fire Code only'], answer: 'A' },
+      { question: 'What must every scaffold be made of?', choices: ['Lightweight materials only', 'Sound construction and materials', 'Wood only', 'Steel only'], answer: 'B' },
+      { question: 'What is one major hazard associated with scaffolding?', choices: ['Falling objects', 'Computer failure', 'Excessive lighting', 'Vehicle maintenance'], answer: 'A' },
+      { question: 'What should scaffolders do before erection?', choices: ['Conduct a site inspection', 'Load the scaffold', 'Remove all braces', 'Remove all guardrails'], answer: 'A' },
+      { question: 'Which PPE protects against falling objects?', choices: ['Safety shoes', 'Hard hat', 'Gloves', 'Safety harness'], answer: 'B' },
+      { question: 'What should scaffolders do when they identify hazards?', choices: ['Ignore them', 'Report them immediately to supervisors', 'Wait until the project ends', 'Remove the warning signs'], answer: 'B' },
+      { question: 'What is the primary function of a spanner?', choices: ['Align bolt holes', 'Tighten and loosen nuts and bolts', 'Measure distances', 'Lift heavy loads'], answer: 'B' },
+      { question: 'What is the advantage of using a ratchet?', choices: ['It provides faster tightening with less effort', 'It measures vertical alignment', 'It prevents falls', 'It connects platform boards'], answer: 'A' },
+      { question: 'What is the function of a podger?', choices: ['Tightens nuts', 'Secures clamps', 'Aligns bolt holes', 'Measures spacing'], answer: 'C' },
+      { question: 'What should tools be inspected for before use?', choices: ['Cracks, rust, or wear', 'Color and brand', 'Weight only', 'Length only'], answer: 'A' },
+      { question: 'Which tool ensures horizontal and vertical alignment?', choices: ['Level', 'Hammer', 'Ratchet', 'Hoist'], answer: 'A' },
+      { question: 'Which tool confirms the vertical alignment of standards?', choices: ['Tape measure', 'Plumb line', 'Spanner', 'Podger'], answer: 'B' },
+      { question: 'What is the function of a hoist?', choices: ['To connect tubes', 'To lift heavy loads', 'To measure spacing', 'To secure platform boards'], answer: 'B' },
+      { question: 'Which coupler connects tubes at right angles?', choices: ['Swivel coupler', 'Sleeve coupler', 'Double coupler', 'Board clamp'], answer: 'C' },
+      { question: 'Which scaffold is commonly used for brick masonry?', choices: ['Single scaffolding', 'Double scaffolding', 'Suspended scaffolding', 'Trestle scaffolding'], answer: 'A' },
+      { question: 'Which scaffold is commonly used for stone masonry and provides extra stability?', choices: ['Single scaffolding', 'Double scaffolding', 'Trestle scaffolding', 'Suspended scaffolding'], answer: 'B' },
+      { question: 'Which scaffold is supported by needles fixed in the building structure?', choices: ['Cantilever', 'Trestle', 'Suspended', 'Steel'], answer: 'A' },
+      { question: 'Which scaffold is suitable for façade work?', choices: ['Single', 'Suspended', 'Trestle', 'Double'], answer: 'B' },
+      { question: 'What is the maximum height for a trestle scaffold unless designed by a structural engineer?', choices: ['2 m', '5 m', '10 m', '20 m'], answer: 'B' },
+      { question: 'Which modular system uses wedge fittings?', choices: ['Ringlock', 'Cup-Lock', 'Kwikstage', 'Tube & Coupler'], answer: 'C' },
+      { question: 'Which system uses rosette connectors that allow multiple angles?', choices: ['Kwikstage', 'Ringlock', 'Cup-Lock', 'Tube & Coupler'], answer: 'B' },
+      { question: 'What should be considered when selecting a scaffold type?', choices: ['Height and load requirements', 'Scaffold color', 'Brand preference only', 'Worker preference only'], answer: 'A' },
+      { question: 'What is the purpose of base plates?', choices: ['To distribute load evenly on the ground', 'To connect standards', 'To support guardrails', 'To secure ladders'], answer: 'A' },
+      { question: 'What is the purpose of sole boards?', choices: ['To support toe boards', 'To prevent sinking on soft soil', 'To connect ledgers', 'To provide access'], answer: 'B' },
+      { question: 'Which component provides the main vertical support?', choices: ['Ledger', 'Transom', 'Standard', 'Brace'], answer: 'C' },
+      { question: 'Which component connects standards horizontally?', choices: ['Ledger', 'Transom', 'Sole board', 'Guardrail'], answer: 'A' },
+      { question: 'What is the function of transoms?', choices: ['To provide vertical support', 'To support platform boards', 'To prevent falling objects', 'To provide access'], answer: 'B' },
+      { question: 'What is the primary function of braces?', choices: ['To ensure scaffold stability', 'To store materials', 'To provide lighting', 'To measure the scaffold'], answer: 'A' },
+      { question: 'What prevents tools and materials from falling from platforms?', choices: ['Standards', 'Toe boards', 'Sole boards', 'Ladders'], answer: 'B' },
+      { question: 'How should scaffolding be dismantled?', choices: ['Randomly', 'From bottom to top', 'Systematically from top to bottom', 'By removing braces first'], answer: 'C' }
+    ];
+
+    // ------------------------------------------------------------------
+    //  Per-module pre-test questions (OPTIONAL)
+    //  If you want different pre-tests for RSW vs Scaffolding, define
+    //  them here keyed by module name and it will override the default
+    //  'questions' array above automatically:
+    //      const PER_MODULE_PRETESTS = {
+    //        'RSW':                [ { question: '...', choices: [...], answer: 'A' }, ... ],
+    //        'Scaffolding Works':  [ { question: '...', choices: [...], answer: 'A' }, ... ]
+    //      };
+    //  Leave it empty ({}) to use the default 'questions' for both modules.
+    // ------------------------------------------------------------------
+    const PER_MODULE_PRETESTS = {
+      // ── SCAFFOLDING WORKS PRE-TEST ──
+      // Used when the pre-test is opened from a Scaffolding lesson
+      // (moduleName === 'Scaffolding Works'). RSW uses the default
+      // 'questions' array above.
+      'Scaffolding Works': [
+        { question: 'What is scaffolding primarily designed to provide?', choices: ['Permanent structural support', 'Safe access and working platforms at height', 'Permanent storage space', 'Temporary building walls'], answer: 'B' },
+        { question: 'Which construction activities commonly use scaffolding?', choices: ['Masonry, painting, plastering, and installation', 'Only excavation', 'Only road construction', 'Only demolition'], answer: 'A' },
+        { question: 'Which standards are identified as regulating scaffolding practices in the Philippines?', choices: ['TESDA NC II, DOLE OSHS, and DPWH Item 902', 'Traffic Code only', 'Electrical Code only', 'Fire Code only'], answer: 'A' },
+        { question: 'What must every scaffold be made of?', choices: ['Lightweight materials only', 'Sound construction and materials', 'Wood only', 'Steel only'], answer: 'B' },
+        { question: 'What is one major hazard associated with scaffolding?', choices: ['Falling objects', 'Computer failure', 'Excessive lighting', 'Vehicle maintenance'], answer: 'A' },
+        { question: 'What should scaffolders do before erection?', choices: ['Conduct a site inspection', 'Load the scaffold', 'Remove all braces', 'Remove all guardrails'], answer: 'A' },
+        { question: 'Which PPE protects against falling objects?', choices: ['Safety shoes', 'Hard hat', 'Gloves', 'Safety harness'], answer: 'B' },
+        { question: 'What should scaffolders do when they identify hazards?', choices: ['Ignore them', 'Report them immediately to supervisors', 'Wait until the project ends', 'Remove the warning signs'], answer: 'B' },
+        { question: 'What is the primary function of a spanner?', choices: ['Align bolt holes', 'Tighten and loosen nuts and bolts', 'Measure distances', 'Lift heavy loads'], answer: 'B' },
+        { question: 'What is the advantage of using a ratchet?', choices: ['It provides faster tightening with less effort', 'It measures vertical alignment', 'It prevents falls', 'It connects platform boards'], answer: 'A' },
+        { question: 'What is the function of a podger?', choices: ['Tightens nuts', 'Secures clamps', 'Aligns bolt holes', 'Measures spacing'], answer: 'C' },
+        { question: 'What should tools be inspected for before use?', choices: ['Cracks, rust, or wear', 'Color and brand', 'Weight only', 'Length only'], answer: 'A' },
+        { question: 'Which tool ensures horizontal and vertical alignment?', choices: ['Level', 'Hammer', 'Ratchet', 'Hoist'], answer: 'A' },
+        { question: 'Which tool confirms the vertical alignment of standards?', choices: ['Tape measure', 'Plumb line', 'Spanner', 'Podger'], answer: 'B' },
+        { question: 'What is the function of a hoist?', choices: ['To connect tubes', 'To lift heavy loads', 'To measure spacing', 'To secure platform boards'], answer: 'B' },
+        { question: 'Which coupler connects tubes at right angles?', choices: ['Swivel coupler', 'Sleeve coupler', 'Double coupler', 'Board clamp'], answer: 'C' },
+        { question: 'Which scaffold is commonly used for brick masonry?', choices: ['Single scaffolding', 'Double scaffolding', 'Suspended scaffolding', 'Trestle scaffolding'], answer: 'A' },
+        { question: 'Which scaffold is commonly used for stone masonry and provides extra stability?', choices: ['Single scaffolding', 'Double scaffolding', 'Trestle scaffolding', 'Suspended scaffolding'], answer: 'B' },
+        { question: 'Which scaffold is supported by needles fixed in the building structure?', choices: ['Cantilever', 'Trestle', 'Suspended', 'Steel'], answer: 'A' },
+        { question: 'Which scaffold is suitable for façade work?', choices: ['Single', 'Suspended', 'Trestle', 'Double'], answer: 'B' },
+        { question: 'What is the maximum height for a trestle scaffold unless designed by a structural engineer?', choices: ['2 m', '5 m', '10 m', '20 m'], answer: 'B' },
+        { question: 'Which modular system uses wedge fittings?', choices: ['Ringlock', 'Cup-Lock', 'Kwikstage', 'Tube & Coupler'], answer: 'C' },
+        { question: 'Which system uses rosette connectors that allow multiple angles?', choices: ['Kwikstage', 'Ringlock', 'Cup-Lock', 'Tube & Coupler'], answer: 'B' },
+        { question: 'What should be considered when selecting a scaffold type?', choices: ['Height and load requirements', 'Scaffold color', 'Brand preference only', 'Worker preference only'], answer: 'A' },
+        { question: 'What is the purpose of base plates?', choices: ['To distribute load evenly on the ground', 'To connect standards', 'To support guardrails', 'To secure ladders'], answer: 'A' },
+        { question: 'What is the purpose of sole boards?', choices: ['To support toe boards', 'To prevent sinking on soft soil', 'To connect ledgers', 'To provide access'], answer: 'B' },
+        { question: 'Which component provides the main vertical support?', choices: ['Ledger', 'Transom', 'Standard', 'Brace'], answer: 'C' },
+        { question: 'Which component connects standards horizontally?', choices: ['Ledger', 'Transom', 'Sole board', 'Guardrail'], answer: 'A' },
+        { question: 'What is the function of transoms?', choices: ['To provide vertical support', 'To support platform boards', 'To prevent falling objects', 'To provide access'], answer: 'B' },
+        { question: 'What is the primary function of braces?', choices: ['To ensure scaffold stability', 'To store materials', 'To provide lighting', 'To measure the scaffold'], answer: 'A' },
+        { question: 'What prevents tools and materials from falling from platforms?', choices: ['Standards', 'Toe boards', 'Sole boards', 'Ladders'], answer: 'B' },
+        { question: 'How should scaffolding be dismantled?', choices: ['Randomly', 'From bottom to top', 'Systematically from top to bottom', 'By removing braces first'], answer: 'C' }
+      ],
+      // ── RSW PRE-TEST ──
+      // Used when the pre-test is opened from an RSW lesson
+      // (moduleName === 'RSW'). Falls back to the default 'questions'
+      // array above if not matched.
+      'RSW': [
+        { question: 'What is identified as the single most critical hazard in rebar installation?', choices: ['Heat stress', 'Vertical impalement', 'Noise exposure', 'Dust exposure'], answer: 'B' },
+        { question: 'What rigging method is required when hoisting heavy bundles of reinforcing steel?', choices: ['Single-point rigging', 'Double-choker hitch', 'Single rope lifting', 'Manual lifting'], answer: 'B' },
+        { question: 'Which PPE protects the hands from cuts caused by raw bar ends?', choices: ['Safety goggles', 'Heavy-duty puncture-resistant leather gloves', 'Canvas shoulder pads', 'Safety harness'], answer: 'B' },
+        { question: 'What must be done with defective or ungrounded equipment?', choices: ['Continue using it carefully', 'Store it for later use', "Tag it \"DO NOT OPERATE\" and report it", 'Give it to another worker'], answer: 'C' },
+        { question: 'What must be anchored before crane rigging is detached from tall rebar cages?', choices: ['Plastic caps', 'Temporary guy-wires, steel turnbuckles, and rigid diagonal bracing', 'Tie wires only', 'Wooden boards'], answer: 'B' },
+        { question: 'At what height must workers be protected by approved fall protection systems according to Module 6?', choices: ['1 m', '1.5 m', '2 m or more', '5 m or more'], answer: 'C' },
+        { question: 'What scaffold tag indicates safe access?', choices: ['Red', 'Yellow', 'Green', 'Blue'], answer: 'C' },
+        { question: 'Why are tie wire ends turned inward toward the core of the cage?', choices: ['To increase concrete strength', 'To prevent sharp wire points from causing injuries', 'To increase bar spacing', 'To reduce the weight of the cage'], answer: 'B' },
+        { question: 'Which body mechanics should be used when manually handling heavy steel bars?', choices: ['Bend from the waist', 'Use the lower back', 'Bend at the knees and keep the load close', 'Twist while lifting'], answer: 'C' },
+        { question: 'What color represents mandatory PPE signs?', choices: ['Red', 'Blue', 'Yellow', 'Green'], answer: 'B' },
+        { question: 'What should workers use when crossing unsupported rebar grids?', choices: ['Bare feet', 'Loose rebar', 'Wooden crawling boards or temporary walkways', 'Tie wire'], answer: 'C' },
+        { question: 'What type of harness is required when working at height?', choices: ['Waist belt', 'Full-body harness with double-lanyard system', 'Chest strap', 'Single rope harness'], answer: 'B' },
+        { question: 'What concrete cover is typically required for concrete cast against earth?', choices: ['25 mm', '40 mm', '50 mm', '75 mm'], answer: 'D' },
+        { question: 'What may happen when concrete chairs are missing or tie wires are loose?', choices: ['Rebar may shift during concrete vibration', 'Rebar becomes stronger', 'Concrete cures faster', 'Bar spacing automatically increases'], answer: 'A' },
+        { question: 'What should be done when a near-miss or injury occurs?', choices: ['Ignore it if nobody is seriously injured', 'Report it immediately to the Safety Officer', 'Report it at the end of the project', 'Only inform another worker'], answer: 'B' },
+        { question: 'What type of protection is required for vertically protruding rebar that workers could fall onto?', choices: ['Standard plastic mushroom caps only', 'Engineered protective caps', 'Tie wire', 'Tape'], answer: 'B' },
+        { question: 'What must be established underneath suspended loads?', choices: ['Storage zone', 'Hazard exclusion zone', 'Rest area', 'Assembly area'], answer: 'B' },
+        { question: 'Where are personnel prohibited from standing during post-tensioning?', choices: ['Near storage areas', 'Directly behind or in line with hydraulic stressing jacks', 'Inside the office', 'Near safety signs'], answer: 'B' },
+        { question: 'Which is an example of heavy infrastructure work mentioned in the RSW modules?', choices: ['Residential painting', 'Bridge piers', 'Tile installation', 'Interior finishing'], answer: 'B' },
+        { question: 'What is the purpose of pre-work hazard identification?', choices: ['To increase production only', 'To recognize hazards and indicators before work begins', 'To eliminate PPE requirements', 'To reduce the number of workers'], answer: 'B' },
+        { question: 'Which type of hazard involves sharp raw steel edges?', choices: ['Mechanical', 'Financial', 'Environmental', 'Administrative'], answer: 'A' },
+        { question: 'What communication method should signalmen maintain with crane operators?', choices: ['Written notes', 'Uninterrupted line-of-sight communication using standard hand signals', 'Text messages only', 'No communication'], answer: 'B' },
+        { question: 'Which PPE protects against flying steel debris?', choices: ['Safety glasses with side shields', 'Shoulder pads', 'Safety harness', 'Leather boots'], answer: 'A' },
+        { question: 'What is the purpose of heavy canvas shoulder pads?', choices: ['Protect against falling objects', 'Assist with manual carrying of long rebar', 'Protect the feet', 'Prevent falls from height'], answer: 'B' },
+        { question: 'What should workers do with a severe puncture wound or laceration?', choices: ['Continue working', 'Isolate the injured worker and initiate emergency response', 'Cover it with tie wire', 'Wait until the shift ends'], answer: 'B' },
+        { question: 'What must be checked during a pre-pour inspection?', choices: ['Rebar spacing, concrete cover, and tie wire security', 'Paint color', 'Worker uniforms', 'Crane color'], answer: 'A' },
+        { question: 'What can insufficient concrete cover cause?', choices: ['Protection from corrosion and structural fire failure', 'Increased corrosion risk and structural fire vulnerability', 'Faster concrete curing', 'Stronger steel connections'], answer: 'B' },
+        { question: 'What is one advanced competency after the RSW NC II foundation?', choices: ['Interior decoration', 'Post-tensioning systems', 'Landscaping', 'Tile setting'], answer: 'B' },
+        { question: 'What type of lifting may be required for prefabricated modular rebar cages?', choices: ['Manual lifting only', 'Dual-crane tandem lifts', 'Ladder lifting', 'Single-person lifting'], answer: 'B' },
+        { question: 'What is the purpose of an exclusion zone during post-tensioning?', choices: ['To provide storage space', 'To keep personnel away from high-pressure stressing operations', 'To improve ventilation', 'To store rebar'], answer: 'B' },
+        { question: 'What should be reviewed before issuing the formal concrete pouring permit?', choices: ['Formwork cleanouts, impalement caps, and debris-free platforms', 'Worker attendance only', 'Crane paint condition', 'Rebar supplier information'], answer: 'A' },
+        { question: 'What is the overall purpose of competency-based OSH training in RSW?', choices: ['To reduce safety requirements', 'To elevate site safety standards and protect crews', 'To eliminate inspections', 'To reduce PPE use'], answer: 'B' }
+      ]
+    };
+
+    const moduleName = sessionStorage.getItem('aiosh_pretest_module_name') || 'Module';
+    const lessonTitle = 'Pre-test';
+    const lessonIdx = sessionStorage.getItem('aiosh_pretest_module_idx') || '0';
+
+    const activeQuestions =
+      (PER_MODULE_PRETESTS[moduleName] && PER_MODULE_PRETESTS[moduleName].length)
+        ? PER_MODULE_PRETESTS[moduleName]
+        : (questions && questions.length ? questions : []);
+
+    const moduleNameEl = document.getElementById('module-name');
+    const quizTitleEl = document.getElementById('quiz-title');
+    const quizStatusTextEl = document.getElementById('quiz-status-text');
+
+    moduleNameEl.textContent = moduleName;
+    quizTitleEl.textContent = moduleName + ' Pre-test';
+    quizStatusTextEl.textContent = 'Pre-test in progress';
+    document.title = 'AiOSH – ' + moduleName + ' Pre-test';
+    document.getElementById('breadcrumb-pre-test').textContent = moduleName + ' Pre-test';
+    document.getElementById('page-tag').textContent = moduleName + ' Pre-test';
+
+    let currentQuestion = 0;
+    const selectedAnswers = new Array(activeQuestions.length).fill(null);
+
+    function renderQuestion() {
+      const q = activeQuestions[currentQuestion];
+      if (!q) {
+        // Safety net: if no question is available for this module, show a
+        // clear message instead of leaving the static placeholder on screen.
+        document.getElementById('question-box').textContent = 'No questions available for this module yet.';
+        document.getElementById('choices').innerHTML = '';
+        return;
+      }
+      document.getElementById('question-title').textContent = 'Question ' + (currentQuestion + 1);
+      document.getElementById('question-count').textContent = (currentQuestion + 1) + ' / ' + activeQuestions.length;
+      document.getElementById('question-box').textContent = q.question;
+
+      const choicesEl = document.getElementById('choices');
+      choicesEl.innerHTML = '';
+
+      q.choices.forEach((choice, idx) => {
+        const choiceLetter = String.fromCharCode(65 + idx);
+        const label = document.createElement('label');
+        label.className = 'choice-option';
+
+        const radio = document.createElement('input');
+        radio.type = 'radio';
+        radio.name = 'quiz-choice';
+        radio.value = choiceLetter;
+        radio.checked = selectedAnswers[currentQuestion] === choiceLetter;
+        radio.addEventListener('change', () => {
+          selectedAnswers[currentQuestion] = choiceLetter;
+        });
+
+        const letter = document.createElement('span');
+        letter.className = 'choice-letter';
+        letter.textContent = choiceLetter;
+
+        const text = document.createElement('span');
+        text.className = 'choice-label-text';
+        text.textContent = choice;
+
+        label.appendChild(radio);
+        label.appendChild(letter);
+        label.appendChild(text);
+
+        choicesEl.appendChild(label);
+      });
+
+      document.getElementById('prev-btn').disabled = currentQuestion === 0;
+      document.getElementById('prev-btn').style.opacity = currentQuestion === 0 ? '0.55' : '1';
+
+      const nextBtn = document.getElementById('next-btn');
+      if (currentQuestion === activeQuestions.length - 1) {
+        nextBtn.textContent = 'Finish Pre-test';
+      } else {
+        nextBtn.textContent = 'Next Question';
+      }
+    }
+
+    document.getElementById('prev-btn').addEventListener('click', () => {
+      if (currentQuestion > 0) {
+        currentQuestion -= 1;
+        renderQuestion();
+      }
+    });
+
+document.getElementById('next-btn').addEventListener('click', () => {
+      if (currentQuestion < activeQuestions.length - 1) {
+        currentQuestion += 1;
+        renderQuestion();
+      } else {
+        const correct = activeQuestions.reduce((acc, q, idx) => {
+          return acc + (selectedAnswers[idx] === q.answer ? 1 : 0);
+        }, 0);
+
+        const result = document.getElementById('quiz-result');
+        result.classList.add('show');
+
+        // Score-only result — no answer review is shown to students.
+        const total = activeQuestions.length;
+        const pct = total ? Math.round((correct / total) * 100) : 0;
+        result.innerHTML =
+          '<div class="result-heading">You scored ' + correct + ' / ' + total + ' (' + pct + '%).</div>' +
+          '<div class="result-sub">Pre-test complete. You may now proceed to the module lessons.</div>';
+
+        document.getElementById('quiz-status-text').textContent = 'Pre-test complete';
+
+        // ─── SAVE PRE-TEST COMPLETION so the module unlocks ───
+        savePreTestCompletion();
+
+        // ─── RETURN TO THE LESSONS PAGE ──────────────────────
+        result.innerHTML += '<div class="result-sub" style="margin-top:10px; color:rgba(165,180,252,0.85);">Returning to your lessons…</div>';
+        setTimeout(() => { window.location.href = 'module-specific.html'; }, 4000);
+      }
+    });
+
+    // Saves the pre-test as "done" for this module using the same
+    // localStorage key format that module-specific.html reads:
+    // aiosh_v2_{yearKey}_{studentId}_preTestDone_{lessonIndex}
+    function savePreTestCompletion() {
+      // Determine the lesson/module index from sessionStorage
+      // (set in module-specific.html via handlePreTest)
+      let lessonIdx = sessionStorage.getItem('aiosh_pretest_module_idx');
+      // Fall back to the ?lesson= query param if present
+      if (lessonIdx === null || lessonIdx === undefined || lessonIdx === '') {
+        const params = new URLSearchParams(window.location.search);
+        lessonIdx = params.get('lesson');
+      }
+      if (lessonIdx === null || lessonIdx === undefined || lessonIdx === '') {
+        lessonIdx = '0';
+      }
+
+      // Determine the year key from the session year
+      const year = sessionStorage.getItem('aiosh_session_year') || localStorage.getItem('aiosh_year') || '';
+      const y = String(year).toLowerCase().trim();
+      let yearKey = '1';
+      if (y.includes('1') || y.includes('first') || y.includes('1st')) yearKey = '1';
+      else if (y.includes('2') || y.includes('second') || y.includes('2nd')) yearKey = '2';
+
+      const sid = sessionStorage.getItem('aiosh_session_id') || localStorage.getItem('aiosh_id') || 'guest';
+
+      const key = `aiosh_v2_${yearKey}_${sid}_preTestDone_${lessonIdx}`;
+      localStorage.setItem(key, 'true');
+    }
+
+    renderQuestion();
+  </script>
+</body>
+</html>

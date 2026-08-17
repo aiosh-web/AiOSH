@@ -1,0 +1,1811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AiOSH – Module</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0a0a2e 0%, #1a1a5e 40%, #0d2137 100%);
+      color: #fff;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Background orbs */
+    .orb { position: fixed; border-radius: 50%; pointer-events: none; z-index: 0; }
+    .orb1 { width: 500px; height: 500px; background: radial-gradient(circle, rgba(99,102,241,0.25) 0%, transparent 70%); top: -150px; left: -150px; }
+    .orb2 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(34,211,238,0.15) 0%, transparent 70%); bottom: -100px; right: 5%; }
+    .orb3 { width: 300px; height: 300px; background: radial-gradient(circle, rgba(168,85,247,0.15) 0%, transparent 70%); top: 40%; left: 30%; }
+
+    /* ─── NAVIGATION BAR ─── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 36px;
+      height: 68px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-brand {
+      display: flex; align-items: center; gap: 12px;
+      text-decoration: none;
+    }
+    .nav-logo {
+      width: 42px; height: 42px; border-radius: 50%;
+      background: rgba(99, 102, 241, 0.25);
+      border: 2px solid rgba(99, 102, 241, 0.6);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden; flex-shrink: 0;
+    }
+    .nav-logo img { width: 100%; height: 100%; object-fit: cover; }
+    .nav-logo-initials { font-size: 13px; font-weight: 700; color: #a5b4fc; letter-spacing: 0.5px; }
+    .nav-site-name { font-size: 18px; font-weight: 700; color: #fff; letter-spacing: 2px; }
+
+    .nav-links { display: flex; align-items: center; gap: 6px; list-style: none; }
+    .nav-links a,
+    .nav-links button {
+      display: inline-flex; align-items: center;
+      padding: 8px 16px;
+      font-size: 13.5px; font-weight: 500;
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: none;
+      background: none; border: none;
+      border-radius: 10px;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      letter-spacing: 0.3px;
+    }
+    .nav-links a:hover, .nav-links button:hover {
+      background: rgba(255, 255, 255, 0.08); color: #fff;
+    }
+    .nav-links a.active {
+      background: rgba(99, 102, 241, 0.25);
+      color: #a5b4fc;
+      border: 1px solid rgba(99, 102, 241, 0.35);
+    }
+    .signout-btn {
+      color: rgba(252, 165, 165, 0.85) !important;
+      border: 1px solid rgba(239, 68, 68, 0.25) !important;
+    }
+    .signout-btn:hover {
+      background: rgba(239, 68, 68, 0.12) !important;
+      color: #fca5a5 !important;
+    }
+
+    /* ─── PAGE WRAPPER ─── */
+    .page {
+      position: relative; z-index: 1;
+      padding: 88px 48px 60px;
+      min-height: 100vh;
+    }
+
+    /* ─── PAGE HEADER ─── */
+    .page-header {
+      margin-bottom: 36px;
+    }
+    .page-tag {
+      display: inline-block;
+      font-size: 11px; font-weight: 600;
+      color: #a5b4fc;
+      background: rgba(99, 102, 241, 0.2);
+      border: 1px solid rgba(99, 102, 241, 0.35);
+      border-radius: 20px;
+      padding: 4px 14px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    .page-title {
+      font-size: 32px; font-weight: 700; color: #fff;
+      margin-bottom: 8px; line-height: 1.2;
+    }
+    .page-title span {
+      background: linear-gradient(135deg, #a5b4fc, #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .page-sub {
+      font-size: 14px; color: rgba(255,255,255,0.45); line-height: 1.6;
+      max-width: 560px;
+    }
+
+    /* ─── YEAR BADGE ─── */
+    .year-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      margin-top: 14px;
+      background: rgba(99,102,241,0.15);
+      border: 1px solid rgba(99,102,241,0.3);
+      border-radius: 12px;
+      padding: 7px 16px;
+      font-size: 13px; color: #c7d2fe; font-weight: 500;
+    }
+    .year-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #818cf8;
+    }
+
+    /* ─── MAIN GRID ─── */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 28px;
+      align-items: start;
+    }
+
+    /* ─── MODULE CONTENT BLOCK ─── */
+    .module-block {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 22px;
+      overflow: hidden;
+    }
+
+    /* Module image */
+    .module-image-wrap {
+      width: 100%; height: 240px;
+      background: rgba(99,102,241,0.15);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .module-image-wrap img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+    .module-image-wrap.has-bg {
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    .module-image-placeholder {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 10px; width: 100%; height: 100%;
+      color: rgba(165,180,252,0.4);
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 0.8px; text-transform: uppercase;
+      text-align: center; padding: 20px;
+    }
+    .module-image-placeholder .img-icon { font-size: 44px; opacity: 0.4; }
+
+    /* Module subject label */
+    .module-subject-tag {
+      position: absolute; top: 14px; left: 14px;
+      background: rgba(99,102,241,0.7);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(165,180,252,0.3);
+      border-radius: 8px;
+      padding: 4px 12px;
+      font-size: 11px; font-weight: 600;
+      color: #e0e7ff; letter-spacing: 0.5px;
+    }
+
+    /* Module text content */
+    .module-body { padding: 28px 30px 32px; }
+
+    .module-title {
+      font-size: 22px; font-weight: 700; color: #fff;
+      margin-bottom: 12px; line-height: 1.3;
+    }
+
+    .module-desc {
+      font-size: 14px; color: rgba(255,255,255,0.55);
+      line-height: 1.75; margin-bottom: 22px;
+    }
+
+    /* Module info row */
+    .module-meta {
+      display: flex; gap: 20px; flex-wrap: wrap;
+      padding-top: 18px;
+      border-top: 1px solid rgba(255,255,255,0.07);
+    }
+    .meta-item {
+      display: flex; flex-direction: column; gap: 3px;
+    }
+    .meta-label {
+      font-size: 10px; font-weight: 600;
+      color: rgba(165,180,252,0.5);
+      text-transform: uppercase; letter-spacing: 0.8px;
+    }
+    .meta-value {
+      font-size: 13px; font-weight: 600; color: #e0e7ff;
+    }
+
+    /* Lesson list inside module */
+    .lesson-list {
+      margin-top: 22px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .lesson-item {
+      display: flex; align-items: center; gap: 14px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 13px 16px;
+      cursor: default;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .lesson-item:hover {
+      background: rgba(99,102,241,0.1);
+      border-color: rgba(99,102,241,0.3);
+    }
+    .lesson-num {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: rgba(99,102,241,0.25);
+      border: 1px solid rgba(99,102,241,0.4);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; color: #a5b4fc;
+      flex-shrink: 0;
+    }
+    .lesson-info { flex: 1; }
+    .lesson-name { font-size: 13.5px; font-weight: 600; color: #e0e7ff; margin-bottom: 2px; }
+    .lesson-sub  { font-size: 11.5px; color: rgba(255,255,255,0.4); }
+    .lesson-status {
+      font-size: 10px; font-weight: 600;
+      padding: 3px 10px; border-radius: 20px;
+      letter-spacing: 0.4px; flex-shrink: 0;
+    }
+    .status-locked    { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.3); }
+    .status-done      { background: rgba(34,197,94,0.15); color: #86efac; border: 1px solid rgba(34,197,94,0.3); }
+    .status-available{ background: rgba(99,102,241,0.2); color: #a5b4fc; border: 1px solid rgba(99,102,241,0.35); }
+
+    /* ─── RIGHT SIDEBAR: Progress Analytics ─── */
+    .sidebar { display: flex; flex-direction: column; gap: 20px; }
+
+    .analytics-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px;
+      padding: 24px;
+    }
+
+    .card-title {
+      font-size: 13px; font-weight: 700;
+      color: rgba(165,180,252,0.9);
+      letter-spacing: 0.8px; text-transform: uppercase;
+      margin-bottom: 20px;
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    /* Overall progress ring */
+    .ring-wrap {
+      display: flex; flex-direction: column;
+      align-items: center; margin-bottom: 20px;
+    }
+    .ring-svg { transform: rotate(-90deg); }
+    .ring-bg   { fill: none; stroke: rgba(255,255,255,0.07); stroke-width: 10; }
+    .ring-fill {
+      fill: none; stroke: url(#ringGrad); stroke-width: 10;
+      stroke-linecap: round;
+      stroke-dasharray: 251.2;
+      stroke-dashoffset: 251.2;
+      transition: stroke-dashoffset 1.2s ease;
+    }
+    .ring-label {
+      font-size: 28px; font-weight: 700; color: #fff; margin-top: -8px;
+    }
+    .ring-sublabel {
+      font-size: 11px; color: rgba(255,255,255,0.4);
+      margin-top: 2px; letter-spacing: 0.5px;
+    }
+
+    /* Per-lesson progress bars */
+    .progress-list { display: flex; flex-direction: column; gap: 14px; }
+    .progress-row { display: flex; align-items: center; gap: 8px; }
+    .progress-row-top {
+      display: flex; justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    .progress-name { font-size: 12px; color: rgba(255,255,255,0.6); font-weight: 500; }
+    .progress-pct  { font-size: 12px; color: #a5b4fc; font-weight: 600; }
+    .progress-bar-bg {
+      width: 100%; height: 6px;
+      background: rgba(255,255,255,0.07);
+      border-radius: 10px; overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%; border-radius: 10px;
+      background: linear-gradient(90deg, #6366f1, #8b5cf6);
+      width: 0%;
+      transition: width 1.2s ease;
+    }
+
+    /* Info card */
+    .info-card {
+      background: rgba(99,102,241,0.1);
+      border: 1px solid rgba(99,102,241,0.25);
+      border-radius: 16px;
+      padding: 18px 20px;
+    }
+    .info-card-title {
+      font-size: 12px; font-weight: 700;
+      color: #a5b4fc; letter-spacing: 0.5px;
+      margin-bottom: 10px;
+    }
+    .info-row {
+      display: flex; justify-content: space-between;
+      align-items: center;
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      font-size: 12.5px;
+    }
+    .info-row:last-child { border-bottom: none; }
+    .info-key   { color: rgba(255,255,255,0.45); }
+    .info-val   { color: #e0e7ff; font-weight: 600; }
+
+    /* ─── SIGN OUT MODAL ─── */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(6px);
+      z-index: 200; align-items: center; justify-content: center;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal {
+      background: rgba(15,15,50,0.95);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 22px; padding: 36px 40px;
+      max-width: 360px; width: 90%; text-align: center;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.6);
+    }
+    .modal-icon  { font-size: 40px; margin-bottom: 14px; }
+    .modal-title { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+    .modal-msg   { font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.6; margin-bottom: 28px; }
+    .modal-btns  { display: flex; gap: 12px; justify-content: center; }
+    .btn-cancel {
+      padding: 10px 28px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 12px; color: rgba(255,255,255,0.7);
+      font-size: 13.5px; font-weight: 500;
+      cursor: pointer; font-family: 'Inter', sans-serif;
+      transition: background 0.2s;
+    }
+    .btn-cancel:hover { background: rgba(255,255,255,0.12); }
+    .btn-signout {
+      padding: 10px 28px;
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      border: none; border-radius: 12px; color: #fff;
+      font-size: 13.5px; font-weight: 600;
+      cursor: pointer; font-family: 'Inter', sans-serif;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+    .btn-signout:hover { opacity: 0.88; transform: translateY(-1px); }
+
+
+    /* ─── START MODULE BUTTON ─── */
+    .start-module-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      margin-top: 24px;
+      padding: 14px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border: none;
+      border-radius: 14px;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.35);
+    }
+    .start-module-btn:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(99, 102, 241, 0.5);
+    }
+    .start-module-btn:active { transform: scale(0.98); }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .main-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 700px) {
+      nav { padding: 0 16px; }
+      .nav-site-name { display: none; }
+      .nav-links a, .nav-links button { padding: 8px 10px; font-size: 12px; }
+      .page { padding: 88px 16px 40px; }
+      .page-title { font-size: 24px; }
+    }
+
+    /* ─── MOBILE (<=480px) ─── */
+    @media (max-width: 480px) {
+      nav { padding: 0 10px; }
+      .nav-logo { width: 34px; height: 34px; }
+      .nav-links { gap: 2px; }
+      .nav-links a, .nav-links button { padding: 7px 9px; font-size: 11.5px; }
+      .page { padding: 72px 14px 32px; }
+      .page-title { font-size: 22px; }
+      .main-grid { grid-template-columns: 1fr; }
+      .module-image-wrap { height: 180px; }
+      .module-body { padding: 20px 18px 24px; }
+      .lesson-item { align-items: flex-start; gap: 10px; }
+      .chat-window { left: 12px; right: 12px; width: auto; max-width: none; }
+      .chat-bubble-btn { left: 16px; bottom: 20px; width: 52px; height: 52px; }
+      .modal { width: 92%; }
+    }
+
+    /* ─── CHAT BUBBLE ─── */
+    .chat-bubble-btn {
+      position: fixed; bottom: 28px; left: 28px; z-index: 999;
+      width: 58px; height: 58px; border-radius: 50%;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 6px 24px rgba(99,102,241,0.5);
+      transition: transform 0.2s, box-shadow 0.2s;
+      font-size: 24px;
+    }
+    .chat-bubble-btn:hover { transform: scale(1.1); box-shadow: 0 10px 32px rgba(99,102,241,0.65); }
+    .chat-bubble-btn .chat-badge {
+      position: absolute; top: -3px; right: -3px;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: #ef4444; border: 2px solid #0a0a2e;
+      font-size: 9px; font-weight: 700; color: #fff;
+      display: none; align-items: center; justify-content: center;
+    }
+    .chat-bubble-btn .chat-badge.show { display: flex; }
+
+    .chat-window {
+      position: fixed; bottom: 98px; left: 28px; z-index: 998;
+      width: 340px;
+      max-width: calc(100vw - 56px);
+      background: rgba(10,10,46,0.97);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+      display: none; flex-direction: column;
+      overflow: hidden; max-height: 460px;
+    }
+    .chat-window.open { display: flex; }
+
+    .chat-header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 14px 16px;
+      background: linear-gradient(135deg, rgba(99,102,241,0.3), rgba(139,92,246,0.2));
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      flex-shrink: 0;
+    }
+    .chat-header-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: rgba(99,102,241,0.4);
+      border: 2px solid rgba(165,180,252,0.4);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; flex-shrink: 0;
+    }
+    .chat-header-info { flex: 1; }
+    .chat-header-name { font-size: 13px; font-weight: 700; color: #fff; }
+    .chat-header-status { font-size: 11px; color: rgba(165,180,252,0.7); display: flex; align-items: center; gap: 5px; }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #86efac; display: inline-block; }
+    .chat-close-btn {
+      background: none; border: none; cursor: pointer;
+      color: rgba(255,255,255,0.4); font-size: 18px;
+      padding: 4px; line-height: 1; transition: color 0.2s;
+    }
+    .chat-close-btn:hover { color: #fff; }
+
+    .chat-messages {
+      flex: 1; overflow-y: auto; padding: 14px 14px 8px;
+      display: flex; flex-direction: column; gap: 10px;
+      scrollbar-width: thin; scrollbar-color: rgba(99,102,241,0.3) transparent;
+    }
+    .chat-messages::-webkit-scrollbar { width: 4px; }
+    .chat-messages::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.3); border-radius: 4px; }
+
+    .chat-msg {
+      display: flex; flex-direction: column; gap: 3px;
+      max-width: 85%;
+    }
+    .chat-msg.admin { align-self: flex-start; }
+    .chat-msg.user  { align-self: flex-end; }
+
+    .chat-msg-bubble {
+      padding: 9px 13px; border-radius: 14px;
+      font-size: 12.5px; line-height: 1.55;
+    }
+    .chat-msg.admin .chat-msg-bubble {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.85);
+      border-bottom-left-radius: 4px;
+    }
+    .chat-msg.user .chat-msg-bubble {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: #fff;
+      border-bottom-right-radius: 4px;
+    }
+    .chat-msg-time {
+      font-size: 10px; color: rgba(255,255,255,0.25);
+      padding: 0 4px;
+    }
+    .chat-msg.user .chat-msg-time { text-align: right; }
+
+    .chat-typing {
+      display: none; align-self: flex-start;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 14px; border-bottom-left-radius: 4px;
+      padding: 10px 14px; gap: 5px;
+      align-items: center;
+    }
+    .chat-typing.show { display: flex; }
+    .typing-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: rgba(165,180,252,0.6);
+      animation: typingBounce 1.2s infinite ease-in-out;
+    }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typingBounce {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+      30% { transform: translateY(-5px); opacity: 1; }
+    }
+
+    .chat-input-row {
+      display: flex; align-items: flex-end; gap: 8px;
+      padding: 10px 12px 12px;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      flex-shrink: 0;
+    }
+    .chat-input {
+      flex: 1; background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px; padding: 9px 12px;
+      color: #fff; font-size: 12.5px; font-family: 'Inter', sans-serif;
+      resize: none; outline: none; line-height: 1.4;
+      max-height: 90px; overflow-y: auto;
+      transition: border-color 0.2s;
+    }
+    .chat-input::placeholder { color: rgba(255,255,255,0.25); }
+    .chat-input:focus { border-color: rgba(99,102,241,0.5); }
+    .chat-send-btn {
+      width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border: none; cursor: pointer; font-size: 15px;
+      display: flex; align-items: center; justify-content: center;
+      transition: opacity 0.2s, transform 0.15s;
+      color: #fff;
+    }
+    .chat-send-btn:hover { opacity: 0.88; transform: scale(1.08); }
+    .chat-send-btn:active { transform: scale(0.95); }
+
+    /* ─── ACCESSIBILITY IMPROVEMENTS ─── */
+
+    /* Skip to main content */
+    .skip-link {
+      position: fixed; top: -60px; left: 16px; z-index: 9999;
+      background: #6366f1; color: #fff;
+      padding: 12px 18px; border-radius: 10px;
+      font-size: 13px; font-weight: 600; text-decoration: none;
+      transition: top 0.2s ease;
+    }
+    .skip-link:focus-visible { top: 12px; }
+
+    /* Visible keyboard focus */
+    a:focus-visible, button:focus-visible, input:focus-visible,
+    select:focus-visible, textarea:focus-visible, summary:focus-visible {
+      outline: 3px solid #a5b4fc; outline-offset: 2px;
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.001s !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001s !important;
+        scroll-behavior: auto !important;
+      }
+    }
+
+    /* ─── MOBILE HAMBURGER MENU ─── */
+    .nav-toggle {
+      display: none;
+      flex-direction: column; justify-content: center; gap: 5px;
+      width: 42px; height: 42px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 10px; cursor: pointer; padding: 10px 9px;
+    }
+    .nav-toggle-bar {
+      display: block; width: 100%; height: 2px;
+      background: #fff; border-radius: 2px;
+      transition: transform 0.25s ease, opacity 0.25s ease;
+    }
+    .nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(2) { opacity: 0; }
+    .nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    @media (max-width: 700px) {
+      .nav-toggle { display: flex; }
+      .nav-links {
+        display: none;
+        position: absolute; top: 68px; left: 0; right: 0;
+        flex-direction: column; align-items: stretch;
+        background: rgba(10,10,46,0.97);
+        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        padding: 10px 16px 14px;
+        box-shadow: 0 18px 40px rgba(0,0,0,0.35);
+      }
+      .nav-links.open { display: flex; }
+      .nav-links li { width: 100%; }
+      .nav-links a, .nav-links button {
+        width: 100%; justify-content: center;
+        padding: 12px !important; font-size: 14px !important;
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+
+  <!-- ─── NAVIGATION BAR ─── -->
+  <nav aria-label="Main navigation">
+    <a class="nav-brand" href="landing.html">
+      <div class="nav-logo">
+        <img src="images/logo.png" alt="AiTECH Logo" />
+      </div>
+      <span class="nav-site-name">AiOSH</span>
+    </a>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
+      <span class="nav-toggle-bar"></span>
+      <span class="nav-toggle-bar"></span>
+      <span class="nav-toggle-bar"></span>
+    </button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="landing.html">Home</a></li>
+      <li><a href="course.html" class="active">Module</a></li>
+      <li><button class="signout-btn" onclick="confirmSignOut()">Sign Out</button></li>
+    </ul>
+  </nav>
+
+  <!-- ─── PAGE ─── -->
+  <main class="page" id="main-content">
+
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="page-tag">Learning Modules</div>
+      <div class="page-title">Your <span id="module-title-name">Module</span></div>
+      <div class="page-sub" id="module-header-desc">Loading your assigned module based on your year level…</div>
+      <div class="year-badge">
+        <div class="year-dot"></div>
+        <span id="year-badge-text">Loading year level…</span>
+      </div>
+    </div>
+
+    <!-- Main Grid: Module Block + Sidebar -->
+    <div class="main-grid">
+
+      <!-- ── MODULE CONTENT BLOCK ── -->
+      <div class="module-block">
+
+        <!-- Image -->
+        <div class="module-image-wrap">
+          <div class="module-image-placeholder" id="module-img-placeholder">
+            <!-- PUT THE MODULE IMAGE HERE — REPLACE THIS ENTIRE DIV WITH: <img src="YOUR-IMAGE-FILENAME.jpg" alt="Module Image" /> -->
+            <!-- EXAMPLE: <img src="scaffolding-cover.jpg" alt="Scaffolding Works" /> -->
+            <div class="img-icon">🏗️</div>
+            PUT MODULE IMAGE HERE —
+            &lt;img src="YOUR-IMAGE-FILENAME.jpg" alt="Module Image" /&gt;
+          </div>
+          <div class="module-subject-tag" id="module-subject-tag">Loading…</div>
+        </div>
+
+        <!-- Text Body -->
+        <div class="module-body">
+          <div class="module-title" id="module-body-title">Loading Module…</div>
+          <div class="module-desc" id="module-body-desc">Please wait while we load your module content.</div>
+
+          <!-- Module meta info -->
+          <div class="module-meta">
+            <div class="meta-item">
+              <div class="meta-label">Year Level</div>
+              <div class="meta-val" id="meta-year">—</div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-label">Subject</div>
+              <div class="meta-val" id="meta-subject">—</div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-label">Total Lessons</div>
+              <div class="meta-val" id="meta-lessons">—</div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-label">Status</div>
+              <div class="meta-val" id="meta-status">—</div>
+            </div>
+          </div>
+
+          <!-- Lesson List -->
+          <div class="lesson-list" id="lesson-list">
+            <!-- Populated by JS -->
+          </div>
+
+          <!-- START MODULE BUTTON — link this to the module page later -->
+          <button class="start-module-btn" id="start-module-btn" onclick="handleStartModule()">
+            🚀 Start Module
+          </button>
+
+        </div>
+      </div>
+
+      <!-- ── RIGHT SIDEBAR: Progress Analytics ── -->
+      <div class="sidebar">
+
+        <!-- Overall Progress Ring -->
+        <div class="analytics-card">
+          <div class="card-title">📊 Progress Analytics</div>
+          <div class="ring-wrap">
+            <svg class="ring-svg" width="110" height="110" viewBox="0 0 110 110">
+              <defs>
+                <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%"   stop-color="#6366f1"/>
+                  <stop offset="100%" stop-color="#8b5cf6"/>
+                </linearGradient>
+              </defs>
+              <circle class="ring-bg"   cx="55" cy="55" r="40"/>
+              <circle class="ring-fill" cx="55" cy="55" r="40" id="ring-fill"/>
+            </svg>
+            <div class="ring-label"   id="ring-label">0%</div>
+            <div class="ring-sublabel">Overall Progress</div>
+          </div>
+
+          <!-- Per-lesson progress bars -->
+          <div class="progress-list" id="progress-list">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <!-- Student Info Card -->
+        <div class="info-card">
+          <div class="info-card-title">👤 Student Info</div>
+          <div class="info-row">
+            <span class="info-key">Name</span>
+            <span class="info-val" id="info-name">—</span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">Year Level</span>
+            <span class="info-val" id="info-year">—</span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">Student ID</span>
+            <span class="info-val" id="info-id">—</span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">Module</span>
+            <span class="info-val" id="info-module">—</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- ─── SIGN OUT MODAL ─── -->
+  <div class="modal-overlay" id="signout-modal">
+    <div class="modal">
+      <div class="modal-icon">🚪</div>
+      <div class="modal-title">Sign Out?</div>
+      <div class="modal-msg">Are you sure you want to sign out of AiOSH? Your progress has been saved.</div>
+      <div class="modal-btns">
+        <button class="btn-cancel"  onclick="closeModal()">Cancel</button>
+        <button class="btn-signout" onclick="signOut()">Yes, Sign Out</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ─── MOBILE NAV TOGGLE ────────────────────────────────────
+    (function initMobileNav() {
+      const toggle = document.getElementById('nav-toggle');
+      const menu = document.getElementById('nav-links');
+      if (!toggle || !menu) return;
+      const close = () => {
+        menu.classList.remove('open');
+        toggle.setAttribute('aria-expanded', 'false');
+        toggle.setAttribute('aria-label', 'Open menu');
+      };
+      toggle.addEventListener('click', () => {
+        const open = menu.classList.toggle('open');
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+      });
+      menu.querySelectorAll('a, button').forEach(el => el.addEventListener('click', close));
+      document.addEventListener('click', (e) => {
+        if (!document.querySelector('nav').contains(e.target)) close();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && menu.classList.contains('open')) {
+          close();
+          toggle.focus();
+        }
+      });
+    })();
+
+    // ─── MODULE DATA ──────────────────────────────────────────
+    const modules = {
+      '1': {
+        bg:         'images/scaffolding.jpg',
+        tag:        'Occupational Safety & Health',
+        titleShort: 'Scaffolding Works',
+        titleFull:  'Module: Scaffolding Works',
+        headerDesc: 'This module covers the fundamentals of scaffolding — from types of scaffolding structures to proper erection, inspection, and dismantling procedures following DOLE and OSHS standards.',
+        bodyDesc:   'Scaffolding is a temporary structure used to support workers and materials during construction, maintenance, or repair of buildings and structures. This module introduces students to the types of scaffolds, load capacity, safety requirements, and the responsibilities of a scaffolding supervisor under Philippine occupational safety and health standards.',
+        subject:    'Scaffolding Works',
+        lessons:    [
+          { name: 'Types of Scaffolding',         sub: 'Tubular, Frame, Suspended & more' },
+          { name: 'Erection & Dismantling',        sub: 'Step-by-step procedures' },
+          { name: 'Load Capacity & Inspection',    sub: 'Safety checks and standards' },
+          { name: 'DOLE / OSHS Compliance',        sub: 'Regulatory requirements' },
+        ]
+      },
+      '2': {
+        bg:         'images/rsw.jpg',
+        tag:        'Occupational Safety & Health',
+        titleShort: 'RSW',
+        titleFull:  'Module: RSW',
+        headerDesc: 'This module covers RSW construction techniques — including practical application, layout, structural integrity, and workplace safety practices aligned with OSHS standards.',
+        bodyDesc:   'RSW work involves practical construction procedures, material coordination, and safe execution in a real worksite setting. This module introduces students to RSW application, tools, technique, common hazards in construction work, and the proper use of personal protective equipment (PPE) as required by OSHS.',
+        subject:    'RSW',
+        lessons:    [
+          { name: 'Learn to Identify Rebar-Specific Hazards and Risks', sub: 'Module 1' },
+          { name: 'Watch to Observe Safe Rigging, Lifting, and Site Signage Rules', sub: 'Module 2' },
+          { name: 'Practice to Execute Hazard Controls & Proper PPE Selection', sub: 'Module 3' },
+          { name: 'Simulate to Manage Emergency Response and First-Aid Procedures', sub: 'Module 4' },
+          { name: 'Perform to Erect and Stabilize Rebar Structures Safely', sub: 'Module 5' },
+          { name: 'Assess to Audit Fall Protection at Heights', sub: 'Module 6' },
+          { name: 'Receive Feedback to Correct At-Risk Behaviors on the Spot', sub: 'Module 7' },
+          { name: 'Advance to the Next Competency — Move to Advanced Structural Safety', sub: 'Module 8' },
+        ]
+      }
+    };
+
+    // ─── DETECT YEAR LEVEL ────────────────────────────────────
+    function getYearKey(yearStr) {
+      if (!yearStr) return null;
+      const y = yearStr.toLowerCase().trim();
+      if (y.includes('1') || y.includes('first') || y.includes('1st')) return '1';
+      if (y.includes('2') || y.includes('second') || y.includes('2nd')) return '2';
+      return null;
+    }
+
+    // ─── HELPERS: read module-specific.html localStorage keys ──
+    function accountId() {
+      return sessionStorage.getItem('aiosh_session_id') || localStorage.getItem('aiosh_id') || 'guest';
+    }
+    function vidWatched(yk, i)  { return localStorage.getItem(`aiosh_v2_${yk}_${accountId()}_videoWatched_${i}`) === 'true'; }
+    function testDone(yk, i)    { return localStorage.getItem(`aiosh_v2_${yk}_${accountId()}_testDone_${i}`) === 'true'; }
+    function vidPct(yk, i)      { return parseInt(localStorage.getItem(`aiosh_v2_${yk}_${accountId()}_videoPct_${i}`) || '0'); }
+
+    // ─── COMPUTE LIVE PROGRESS FROM module-specific SAVES ─────
+    function computeProgress(yk, mod) {
+      const total       = mod.lessons.length;
+      let   watchedCount = 0;
+      let   currentTopic = null;
+      let   progressSum = 0;
+
+      mod.lessons.forEach((lesson, i) => {
+        const pct = vidPct(yk, i);
+        progressSum += pct;
+
+        if (vidWatched(yk, i) || pct >= 100) watchedCount++;
+        if (pct > 0 || vidWatched(yk, i)) currentTopic = lesson.name;
+      });
+
+      // Overall % — average of all stored video watch percentages across the 8 modules
+      const overallPct = Math.round(progressSum / total);
+
+      // Status
+      let status = 'Not Started';
+      if (watchedCount === total) status = 'Finished';
+      else if (watchedCount > 0 || mod.lessons.some((_, i) => vidPct(yk, i) > 0)) status = 'Ongoing';
+
+      return { overallPct, watchedCount, total, currentTopic, status };
+    }
+
+    // ─── RENDER MODULE ────────────────────────────────────────
+    function renderModule(yearKey, yearLabel) {
+      const mod = modules[yearKey];
+      if (!mod) return;
+
+      const prog = computeProgress(yearKey, mod);
+
+      // Header
+      document.getElementById('module-title-name').textContent    = mod.titleShort;
+      document.getElementById('module-header-desc').textContent   = mod.headerDesc;
+      document.getElementById('year-badge-text').textContent      = yearLabel + ' — ' + mod.subject;
+
+      // Module block
+      // Module image → show the module's image as the block background
+      const moduleImageWrap = document.querySelector('.module-image-wrap');
+      moduleImageWrap.classList.add('has-bg');
+      moduleImageWrap.style.backgroundImage = `url('${mod.bg}')`;
+      document.getElementById('module-img-placeholder').style.display = 'none';
+      document.getElementById('module-subject-tag').textContent   = mod.tag;
+      document.getElementById('module-body-title').textContent    = mod.titleFull;
+      document.getElementById('module-body-desc').textContent     = mod.bodyDesc;
+      document.getElementById('meta-year').textContent            = yearLabel;
+
+      // Subject → shows current topic the student is on
+      document.getElementById('meta-subject').textContent =
+        prog.currentTopic ? prog.currentTopic : mod.subject;
+
+      // Total Lessons → X / 4 Watched
+      document.getElementById('meta-lessons').textContent =
+        prog.watchedCount + ' / ' + prog.total + ' Watched';
+
+      // Status → Not Started / Ongoing / Finished
+      const statusEl = document.getElementById('meta-status');
+      statusEl.textContent = prog.status;
+      statusEl.style.color =
+        prog.status === 'Finished'   ? '#86efac' :
+        prog.status === 'Ongoing'    ? '#fde68a' :
+                                       'rgba(255,255,255,0.45)';
+
+      // Lesson list — show watched/locked state per lesson
+      const lessonList = document.getElementById('lesson-list');
+      lessonList.innerHTML = '';
+      mod.lessons.forEach((lesson, i) => {
+        const watched  = vidWatched(yearKey, i);
+        const pct      = vidPct(yearKey, i);
+        let statusClass = 'status-locked';
+        let statusText  = 'Locked';
+        if (watched)        { statusClass = 'status-done';      statusText = '✓ Done'; }
+        else if (pct > 0)   { statusClass = 'status-available'; statusText = 'In Progress'; }
+        else if (i === 0)   { statusClass = 'status-available'; statusText = 'Available'; }
+        else {
+          // Unlock rule: same as module-specific
+          const prevWatched = vidWatched(yearKey, i - 1);
+          const prevTest    = i > 1 ? testDone(yearKey, i - 1) : prevWatched;
+          if (i === 1 && prevWatched)  { statusClass = 'status-available'; statusText = 'Available'; }
+          else if (i > 1 && prevTest)  { statusClass = 'status-available'; statusText = 'Available'; }
+        }
+
+        const div = document.createElement('div');
+        div.className = 'lesson-item';
+        div.innerHTML = `
+          <div class="lesson-num">${watched ? '✓' : i + 1}</div>
+          <div class="lesson-info">
+            <div class="lesson-name">${lesson.name}</div>
+            <div class="lesson-sub">${lesson.sub}</div>
+          </div>
+          <div class="lesson-status ${statusClass}">${statusText}</div>
+        `;
+        lessonList.appendChild(div);
+      });
+
+      // Progress bars — per video watch %
+      const progressList = document.getElementById('progress-list');
+      progressList.innerHTML = '';
+      mod.lessons.forEach((lesson, i) => {
+        const pct = vidPct(yearKey, i);
+        const row = document.createElement('div');
+        row.className = 'progress-row';
+        row.innerHTML = `
+          <div class="progress-row-top">
+            <span class="progress-name">Video ${i + 1}: ${lesson.name}</span>
+            <span class="progress-pct" id="pct-${i}">${pct}%</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="bar-${i}"></div>
+          </div>
+        `;
+        progressList.appendChild(row);
+        setTimeout(() => {
+          document.getElementById(`bar-${i}`).style.width = pct + '%';
+        }, 300 + i * 150);
+      });
+
+      // Overall ring — based on videos watched (0/25/50/75/100%)
+      const circumference = 251.2;
+      const offset = circumference - (prog.overallPct / 100) * circumference;
+      setTimeout(() => {
+        document.getElementById('ring-fill').style.strokeDashoffset = offset;
+        document.getElementById('ring-label').textContent = prog.overallPct + '%';
+      }, 400);
+    }
+
+    // ─── RENDER FALLBACK (unknown year) ──────────────────────
+    function renderFallback(yearLabel) {
+      document.getElementById('module-title-name').textContent  = 'Module';
+      document.getElementById('module-header-desc').textContent = 'Your year level "' + yearLabel + '" is not yet assigned to a module. Please contact your instructor.';
+      document.getElementById('year-badge-text').textContent    = yearLabel + ' — No module assigned';
+      const moduleImageWrap = document.querySelector('.module-image-wrap');
+      moduleImageWrap.classList.remove('has-bg');
+      moduleImageWrap.style.backgroundImage = '';
+      document.getElementById('module-img-placeholder').style.display = '';
+      document.getElementById('module-subject-tag').textContent = 'Unassigned';
+      document.getElementById('module-body-title').textContent  = 'No Module Found';
+      document.getElementById('module-body-desc').textContent   = 'Your year level is not yet mapped to a module. Please check with your AiTECH instructor or administrator.';
+      document.getElementById('meta-year').textContent    = yearLabel;
+      document.getElementById('meta-subject').textContent = 'N/A';
+      document.getElementById('meta-lessons').textContent = '0 Lessons';
+      document.getElementById('meta-status').textContent  = 'Not Assigned';
+    }
+
+    // ─── INIT ─────────────────────────────────────────────────
+    window.addEventListener('load', () => {
+      const name  = sessionStorage.getItem('aiosh_session_name') || localStorage.getItem('aiosh_name') || 'Student';
+      const year  = sessionStorage.getItem('aiosh_session_year') || localStorage.getItem('aiosh_year') || '';
+      const id    = sessionStorage.getItem('aiosh_session_id')   || localStorage.getItem('aiosh_id')   || '—';
+
+      // Student info sidebar
+      document.getElementById('info-name').textContent = name;
+      document.getElementById('info-year').textContent = year || '—';
+      document.getElementById('info-id').textContent   = id;
+
+      const yearKey = getYearKey(year);
+
+      if (yearKey) {
+        renderModule(yearKey, year);
+        document.getElementById('info-module').textContent = modules[yearKey].subject;
+      } else {
+        renderFallback(year || 'Unknown');
+        document.getElementById('info-module').textContent = 'Not Assigned';
+      }
+    });
+
+    // ─── START MODULE ─────────────────────────────────────
+    function handleStartModule() {
+      // Redirect to the specific module page
+      window.location.href = 'module-specific.html';
+    }
+
+    // ─── SIGN OUT ─────────────────────────────────────────────
+    function confirmSignOut() {
+      document.getElementById('signout-modal').classList.add('show');
+    }
+    function closeModal() {
+      document.getElementById('signout-modal').classList.remove('show');
+    }
+    function signOut() {
+      sessionStorage.clear();
+      window.location.href = 'login.html';
+    }
+    document.getElementById('signout-modal').addEventListener('click', function(e) {
+      if (e.target === this) closeModal();
+    });
+  
+    // ─── RULE-BASED CHATBOT ───────────────────────────────────
+
+    // ── KNOWLEDGE BASE ────────────────────────────────────────
+    const KB = [
+
+      // ═══════════════════════════════════════════════════════
+      // GREETINGS & SMALL TALK
+      // ═══════════════════════════════════════════════════════
+      { /* GREETINGS */
+        tags: ['hello','hi','hey','good morning','good afternoon','good evening','good day',
+               'howdy','sup','what\'s up','whats up','yo','greetings','hiya','helo','hii',
+               'heya','ello','wassup','wazzup','morning','afternoon','evening','musta',
+               'kamusta','kumusta','magandang umaga','magandang hapon','magandang gabi',
+               'hello there', 'hi there', 'hey there', 'good day sir', 'good day maam', 'hiii', 'heyy'],
+        reply: "Hi there! 👋 Welcome to AiOSH Support! I'm your virtual assistant. How can I help you today?\n\nYou can ask me about:\n• Login and account\n• Modules and videos\n• Tests and progress\n• Navigation\n• Technical issues"
+      },
+      { /* HOW ARE YOU */
+        tags: ['how are you','how r you','how are u','kumusta ka','how do you do','you ok',
+               'are you ok','you good','you fine','are you fine','you alright','you doing',
+               'how\'s it going','hows it going','how is it going','how you doing',
+               'how are things', 'how are you doing'],
+        reply: "I'm doing great, thank you for asking! 😊 I'm here and ready to help you with anything about AiOSH. What can I assist you with today?"
+      },
+      { /* THANK YOU */
+        tags: ['thank you','thanks','thank u','ty','tyvm','thank you so much','thanks a lot',
+               'maraming salamat','salamat','thank you very much','thanks so much','thx',
+               'thnx','thnks','tysm','appreciate it','appreciated','many thanks', 'much obliged', 'grateful', 'thankful'],
+        reply: "You're very welcome! 😊 Don't hesitate to ask if you have more questions. Happy learning!"
+      },
+      { /* GOODBYE */
+        tags: ['bye','goodbye','good bye','see you','see ya','cya','later','take care',
+               'paalam','adios','farewell','until next time','catch you later','tc',
+               'bye bye', 'good day', 'have a good day', 'talk to you later'],
+        reply: "Goodbye! 👋 Have a great day and keep up the great work with your studies! 📚"
+      },
+      { /* ACKNOWLEDGEMENT */
+        tags: ['ok','okay','alright','got it','i see','understood','i understand','sure',
+               'cool','nice','great','awesome','perfect','noted','i got it','makes sense',
+               'roger that', 'understood that', 'affirmative', 'fine', 'good', 'right'],
+        reply: "Great! 😊 Is there anything else you'd like to know? Feel free to ask anytime!"
+      },
+      { /* HELP */
+        tags: ['help','assist','assistance','support','need help','i need help','please help',
+               'can you help','could you help','tulong','tulungan','saklolo','mayday',
+               'help me', 'support me', 'aid', 'guidance', 'question', 'can you assist'],
+        reply: "Of course, I'm here to help! 😊 Here's what I can assist you with:\n\n🔐 Login & Account\n📚 Modules & Content\n🎬 Videos & Unlock Rules\n📝 Tests & Assessments\n📊 Progress Tracking\n🧭 Navigation\n💻 Technical Issues\n💬 Contact & Support\n\nJust type your question!"
+      },
+      { /* WHO ARE YOU */
+        tags: ['who are you','what are you','what is this','are you a bot','are you human',
+               'are you ai','are you robot','are you real','who made you','what can you do',
+               'sino ka','ano ka','ikaw ba ay bot','anong kaya mo','your purpose',
+               'what\'s your name', 'your name', 'who are you really'],
+        reply: "I'm the AiOSH Virtual Assistant! 🤖 I'm a chatbot built to help students of Antipolo Institute of Technology navigate the AiOSH Learning Portal.\n\nI can answer questions about login, modules, videos, tests, progress, and more. I'm not a real person, but I'll do my best to help you! 😊"
+      },
+
+      // ═══════════════════════════════════════════════════════
+      // LOGIN & ACCOUNT
+      // ═══════════════════════════════════════════════════════
+      { /* HOW TO LOGIN */
+        tags: ['how to login','how do i login','how to log in','how do i log in','login process',
+               'sign in process','how to sign in','how do i sign in','how to access','paano mag login',
+               'paano pumasok','how to enter','how to start','get started','how to use',
+               'first time','new user','how to begin','start using','access portal',
+               'login help', 'sign in help', 'login procedure', 'login steps', 'how to get in'],
+        reply: "Here's how to log in to AiOSH! 🔐\n\n1️⃣ Go to the Login page\n2️⃣ Enter your Full Name\n3️⃣ Enter your Year Level (e.g. 1st Year)\n4️⃣ Enter your Student ID (e.g. 2024-00123)\n5️⃣ Enter your Password\n6️⃣ Click the Sign In button\n\nTip: Check 'Remember Me' so the page remembers your info next time! 😊"
+      },
+      { /* FORGOT PASSWORD */
+        tags: ['forgot password','forget password','lost password','cant remember password',
+               'password reset','reset password','change password','new password','recover password',
+               'password recovery','nakalimutan password','hindi ko matandaan','i forgot','forgot my',
+               'reset my password', 'change my password', 'password help', 'lost my password'],
+        reply: "No worries! Here's how to reset your password: 🔑\n\n1️⃣ On the Login page, click 'Forgot Password?'\n2️⃣ You'll be taken to the Reset Password page\n3️⃣ Enter your New Password\n4️⃣ Confirm your new password\n5️⃣ Click the Apply button\n\nRemember: your password must have at least 6 characters, 1 uppercase letter, and 1 symbol! ✅"
+      },
+      { /* PASSWORD REQUIREMENTS */
+        tags: ['password requirement','password rule','password format','what password','password need',
+               'password must','valid password','strong password','password contain','password include',
+               'password have','password length','minimum password','password criteria','password policy',
+               'what should password','password condition','password standard','password spec',
+               'password rules', 'password requirements', 'password guidelines', 'password info'],
+        reply: "Your password must meet these requirements: 🔐\n\n✅ At least 6 characters long\n✅ At least 1 uppercase letter (A-Z)\n✅ At least 1 symbol (e.g. . , ! @ # $ % & *)\n\nExample of a valid password: 'Aitech@2025'\n\nMake sure all three requirements are met before clicking Apply! 💪"
+      },
+      { /* STUDENT ID */
+        tags: ['student id','what is student id','student id format','id format','id number',
+               'school id','what is my id','my student id','student number','id number format',
+               'where is my id','find my id','get my id','id requirement','student identification',
+               'id pattern','id example','sample id','id looks like','what does id look like',
+               'student no', 'id no', 'my id'],
+        reply: "Your Student ID is provided by AiTECH! 🎓\n\nFormat: YYYY-XXXXX\nExample: 2024-00123\n\nYour Student ID is given to you when you enrolled at Antipolo Institute of Technology. If you don't have it, please contact your AiTECH instructor or the registrar's office."
+      },
+      { /* REMEMBER ME */
+        tags: ['remember me','remember checkbox','save login','auto fill','auto login',
+               'save credentials','remember account','keep logged in','stay logged in',
+               'save my info','remember my info','what is remember','remember feature',
+               'auto login', 'save details', 'remember my login'],
+        reply: "The 'Remember Me' checkbox saves your Name, Year Level, and Student ID in your browser! ✅\n\nThis means next time you visit the login page, your info will be pre-filled — you just need to enter your password.\n\nNote: It saves info on this specific browser and device only. It does NOT save your password for security reasons. 🔒"
+      },
+      { /* CANNOT LOGIN */
+        tags: ['cant login','cannot login','can\'t log in','login failed','login error',
+               'login not working','sign in failed','wrong credentials','invalid login',
+               'login problem','trouble logging in','issue logging in','login issue',
+               'unable to login','login unsuccessful','not letting me in','wont let me login',
+               'cannot sign in', 'login failed', 'login issue', 'login problem'],
+        reply: "Having trouble logging in? Here's what to check: 🔍\n\n1️⃣ Make sure ALL fields are filled in (Name, Year Level, Student ID, Password)\n2️⃣ Check that your Student ID is correct\n3️⃣ Check your password — it's case-sensitive!\n4️⃣ Make sure Caps Lock is off\n5️⃣ Try refreshing the page\n\nIf you still can't log in, click 'Forgot Password?' or contact your AiTECH instructor. 📞"
+      },
+      { /* WRONG PASSWORD */
+        tags: ['wrong password','incorrect password','password wrong','password not working',
+               'password error','password incorrect','invalid password','bad password',
+               'password doesn\'t match','password mismatch','password not accepted',
+               'wrong pass', 'incorrect pass', 'password issue'],
+        reply: "Your password might be incorrect! Here's what to check: 🔑\n\n• Make sure Caps Lock is OFF\n• Check that you're using the correct uppercase letters and symbols\n• Try the Forgot Password option to reset it\n\nRemember your password must have 6+ characters, 1 uppercase, and 1 symbol! 💪"
+      },
+      { /* CHANGE INFO */
+        tags: ['change name','change year','change student id','change my info','update info',
+               'update profile','edit profile','change profile','wrong name','wrong year level',
+               'wrong student id','entered wrong info','incorrect info','fix my info',
+               'edit name', 'edit year', 'edit id', 'update my info'],
+        reply: "To change your login information, simply log out and log back in with the correct details! 📝\n\nIf you entered the wrong Student ID or Name during enrollment, please contact your AiTECH instructor to have it corrected. 🏫"
+      },
+      { /* SIGN OUT */
+        tags: ['sign out','log out','logout','signout','how to logout','how to sign out',
+               'how to log out','exit','leave account','exit account','paano mag logout',
+               'quit account','end session','close session','leave portal', 'signout procedure', 'log out procedure'],
+        reply: "To sign out of AiOSH: 🚪\n\n1️⃣ Click the 'Sign Out' button in the top navigation bar\n2️⃣ A confirmation pop-up will appear\n3️⃣ Click 'Yes, Sign Out' to confirm\n4️⃣ You'll be returned to the Login page\n\nAlways sign out after using shared or public computers for your security! 🔒"
+      },
+
+      // ═══════════════════════════════════════════════════════
+      // MODULES
+      // ═══════════════════════════════════════════════════════
+      { /* MY MODULE */
+        tags: ['what is my module','my module','which module','what module','module assigned',
+               'module for me','what subject','my subject','what course','my course',
+               'assigned module','module assignment','ano ang module ko','anong module',
+               'my course', 'my class', 'my lessons'],
+        reply: "Your module depends on your Year Level! 📚\n\n🏗️ 1st Year → Scaffolding Works\n🧱 2nd Year → RSW\n\nYour module is automatically shown when you log in with your year level. Just go to the Module page or click the module card on the Home page!"
+      },
+      { /* SCAFFOLDING */
+        tags: ['scaffolding','scaffolding works','what is scaffolding','scaffolding module',
+               'first year module','1st year module','ano ang scaffolding','tungkol sa scaffolding',
+               'scaffolding about','scaffolding topic','scaffolding subject',
+               'scaffolding course', 'scaffolding class', 'scaffolding lessons', '1st year course'],
+        reply: "Scaffolding Works is the module for 1st Year students! 🏗️\n\nIt covers:\n• Types of Scaffolding (Tubular, Frame, Suspended)\n• Erection and Dismantling procedures\n• Load Capacity and Inspection\n• DOLE/OSHS Compliance\n\nIt has 4 video lessons following Occupational Safety and Health (OSH) standards of the Philippines. 🇵🇭"
+      },
+      { /* RSW */
+        tags: ['rsw','reinforcing steel works','rebar safety','what is rsw','rsw module','second year module',
+               '2nd year module','ano ang rsw','tungkol sa rsw','rsw about',
+               'rsw topic','rsw subject','rebar','rigging','steel works',
+               'rsw course', 'rsw class', 'rsw lessons', '2nd year course'],
+        reply: "RSW (Reinforcing Steel Works) is the module for 2nd Year students! 🔩\n\nIt covers:\n• Rebar-Specific Hazards and Risk Recognition\n• Safe Rigging, Lifting, and Site Signage Rules\n• Hazard Controls & Proper PPE Selection\n• Emergency Response and First-Aid Procedures\n• Erecting & Stabilizing Rebar Structures Safely\n• Fall Protection and Harness Compliance\n• Correcting At-Risk Behaviors\n• Advanced Structural Safety\n\nIt has 8 competency-based video lessons aligned with OSHS standards for safe reinforcing steel work. 🏗️"
+      },
+      { /* NUMBER OF VIDEOS/LESSONS */
+        tags: ['how many videos','number of videos','total videos','videos in module',
+               'how many lessons','total lessons','number of lessons','lessons in module',
+               'how many topics','content count','module content','ilang video','ilang aralin',
+               'video count', 'lesson count', 'number of videos', 'number of lessons'],
+        reply: "Each module is broken into competency-based video lessons! 🎬\n\n🏗️ Scaffolding Works has 4 video lessons.\n🔩 RSW (Reinforcing Steel Works) has 8 video lessons.\n\nYou must complete them in order — finish one video and its quiz to unlock the next! 🔓"
+      },
+      { /* VIDEO TOPICS */
+        tags: ['what are the videos','video topics','video list','video titles','video names',
+               'what videos','list of videos','video content','video subjects','what will i learn',
+               'what to learn','what is covered','module topics','lesson topics','lesson list',
+               'video lessons', 'lesson topics', 'video content'],
+        reply: "Here's an overview of the video lessons by module: 📋\n\n🏗️ Scaffolding Works → 4 lessons (Types of Scaffolding, Erection & Dismantling, Load Capacity & Inspection, DOLE/OSHS Compliance)\n🔩 RSW → 8 competency lessons (Hazard Recognition, Safe Rigging & Lifting, PPE & Hazard Controls, Emergency Response, Safe Rebar Erection, Fall Protection, Correcting At-Risk Behaviors, Advanced Structural Safety)\n\nEach video builds on the previous one. Watch them in order! ✅"
+      },
+      { /* ACCESS MODULE */
+        tags: ['how to access module','go to module','open module','find module','where is module',
+               'module location','start module','begin module','how to start module',
+               'click module','navigate to module','module page','go to course',
+               'access course', 'module access', 'start course'],
+        reply: "Here's how to access your module: 📚\n\n1️⃣ After logging in, you'll see the Home page\n2️⃣ Click 'Module' on the navigation bar OR click the module card on the Home page\n3️⃣ You'll see your assigned module with progress info\n4️⃣ Click the 'Start Module' button to begin your lessons!\n\nEasy as that! 😊"
+      },
+      { /* OSH */
+        tags: ['osh','occupational safety','occupational health','oshs','dole','safety health',
+               'what is osh','what is oshs','safety standard','health standard','philippine standard',
+               'labor standard','safety regulation','health regulation', 'safety', 'health', 'dole standards'],
+        reply: "OSH stands for Occupational Safety and Health! 🦺\n\nAiOSH is built around OSHS (Occupational Safety and Health Standards) — the Philippine national standards set by DOLE (Department of Labor and Employment) to ensure safe and healthy working conditions.\n\nYour modules (Scaffolding and RSW) are aligned with these standards to prepare you for real-world construction safety! 🏗️"
+      },
+
+      // ═══════════════════════════════════════════════════════
+      // VIDEOS
+      // ═══════════════════════════════════════════════════════
+      { /* UNLOCK VIDEO */
+        tags: ['how to unlock video','unlock next video','how to unlock','unlock video 2',
+               'unlock video 3','unlock video 4','video locked','why is video locked',
+               'cant access video','cannot access video','video not available','locked video',
+               'how to open next','open next video','access next video','paano i-unlock',
+               'unlocking videos', 'video lock', 'unlock lesson'],
+        reply: "Here's how the video unlock system works: 🔓\n\n🔵 Video 1 → Always available (just open it!)\n🔵 Video 2 → Unlocks after you FINISH watching Video 1\n🔵 Video 3 → Unlocks after you ANSWER the test for Video 2\n🔵 Video 4 → Unlocks after you ANSWER the test for Video 3\n\nMake sure to watch each video completely (100%) to unlock the next one! 📺"
+      },
+      { /* VIDEO 1 */
+        tags: ['video 1','first video','intro video','introduction video','video one',
+               'unang video','video 1 about','what is video 1','video 1 topic',
+               'first lesson', 'intro lesson', 'video one topic'],
+        reply: "Video 1 is the Introduction video! 🎬\n\n• It gives you an overview of the entire module\n• It has NO test — just watch it fully!\n• Once you finish watching, Video 2 will automatically unlock\n• It's the starting point of your learning journey 🚀"
+      },
+      { /* VIDEO 2 */
+        tags: ['video 2','second video','video two','ikalawang video','video 2 about',
+               'what is video 2','video 2 topic','self preparation','site preparation',
+               'preparation video','before assessment video', 'second lesson', 'video two topic'],
+        reply: "Video 2 covers Self Preparation and Site Preparation Before the Assessment! 🦺\n\n• Topics include: PPE, pre-activity checklist, and worksite setup\n• This video HAS a test after watching\n• Complete the test to unlock Video 3\n• Unlock requirement: Finish watching Video 1 first 🔓"
+      },
+      { /* VIDEO 3 */
+        tags: ['video 3','third video','video three','ikatlong video','video 3 about',
+               'what is video 3','video 3 topic','on the site','during assessment',
+               'on site video','assessment video', 'third lesson', 'video three topic'],
+        reply: "Video 3 covers On the Site and During Assessment! 🏗️\n\n• Topics include: actual on-site procedures, inspection, and safety checks\n• This video HAS a test after watching\n• Complete the test to unlock Video 4\n• Unlock requirement: Answer the test for Video 2 first 🔓"
+      },
+      { /* VIDEO 4 */
+        tags: ['video 4','fourth video','video four','ikaapat na video','video 4 about',
+               'what is video 4','video 4 topic','wrap up','wrapup','summary video',
+               'final video','last video','recap video', 'fourth lesson', 'final lesson', 'video four topic'],
+        reply: "Video 4 is the Wrap Up — the final video! 🎓\n\n• It recaps all key concepts from the entire module\n• This video HAS a test after watching\n• Completing this test finishes the module!\n• Unlock requirement: Answer the test for Video 3 first 🔓\n\nYou're almost done when you reach this video! 💪"
+      },
+      { /* VIDEO NOT PLAYING */
+        tags: ['video not playing','video won\'t play','cant play video','cannot play video',
+               'video error','video problem','video not loading','video not working',
+               'video buffering','video stuck','video frozen','no video','video issue',
+               'cant watch','cannot watch','watch problem','stream problem', 'video broken', 'video glitch', 'video playback'],
+        reply: "Having trouble playing the video? Try these steps: 🔧\n\n1️⃣ Check your internet connection\n2️⃣ Refresh the page (Ctrl+R or F5)\n3️⃣ Try a different browser (Chrome, Firefox, or Edge)\n4️⃣ Clear your browser cache\n5️⃣ Make sure the video is properly placed in your project folder\n\nIf none of these work, please contact your AiTECH instructor! 📞"
+      },
+      { /* REWATCH VIDEO */
+        tags: ['rewatch','watch again','replay video','watch video again','redo video',
+               'can i rewatch','can i replay','view again','see again','ulitin ang video',
+               'panoorin ulit','replay','repeat video', 'watch again', 're-watch'],
+        reply: "Yes! You can rewatch any video anytime! 🔄\n\nJust click on the dropdown of any unlocked video and it will be available for you to watch again.\n\nRewatching won't reset your progress — your completion status will remain. 😊"
+      },
+      { /* VIDEO PROGRESS */
+        tags: ['watch progress','video progress','how much watched','how far watched',
+               'watching percentage','watched percentage','how much of video','video bar',
+               'progress bar video','video completion','watched so far', 'video progress bar', 'my video progress'],
+        reply: "Your video watch progress is shown as a percentage bar below each video! 📊\n\nIt starts at 0% and goes up to 100% as you watch.\n\n• The progress bar fills up as you watch\n• You need to reach 100% to unlock the next section\n• Your progress is automatically saved! ✅"
+      },
+
+      // ═══════════════════════════════════════════════════════
+      // TESTS & ASSESSMENTS
+      // ═══════════════════════════════════════════════════════
+      { /* HOW TO ANSWER TEST */
+        tags: ['how to answer test','take test','start test','begin test','open test',
+               'do the test','answer test','complete test','finish test','take quiz',
+               'answer quiz','how to take test','paano sumagot','sumagot sa test',
+               'test procedure', 'start quiz', 'begin quiz', 'answer quiz'],
+        reply: "Here's how to answer the test: 📝\n\n1️⃣ First, watch the video completely (100%)\n2️⃣ Once the video is done, the 'Answer Test' button will unlock (turn purple)\n3️⃣ Click the 'Answer Test' button\n4️⃣ Answer all the questions\n5️⃣ Submit your answers\n\nAfter completing the test, the next video will unlock! 🔓"
+      },
+      { /* TEST LOCKED */
+        tags: ['test locked','test button locked','cant answer test','cannot answer test',
+               'test not available','test not unlocked','answer test button locked',
+               'test disabled','test button disabled','why is test locked','test not working',
+               'quiz locked', 'test unavailable', 'test not opening'],
+        reply: "The Answer Test button is locked because you haven't finished watching the video yet! 🔒\n\nYou need to:\n✅ Watch the FULL video (progress bar must reach 100%)\n✅ Then the Answer Test button will automatically unlock!\n\nMake sure you don't skip parts of the video! 📺"
+      },
+      { /* WHAT IS PRETEST */
+        tags: ['what is pretest','pre test','pre-test','pretest','before test','test before video',
+               'test before watching','prior knowledge test','initial test','diagnostic test',
+               'pre-quiz', 'pre assessment', 'pretest meaning'],
+        reply: "A Pre-test is a short quiz taken BEFORE watching the video! 📋\n\n• It checks your prior knowledge on the topic\n• It helps measure how much you already know\n• Your pre-test score will be compared with your post-test to track learning\n• Don't worry if you don't know all the answers — it's just a baseline check! 😊"
+      },
+      { /* WHAT IS POSTTEST */
+        tags: ['what is posttest','post test','post-test','posttest','after test','test after video',
+               'test after watching','final test','end test','knowledge check after',
+               'post-quiz', 'post assessment', 'posttest meaning'],
+        reply: "A Post-test is a short quiz taken AFTER watching the video! 📋\n\n• It measures what you learned from the video\n• Your score is compared with your pre-test to show your improvement\n• Completing the post-test unlocks the next video\n• Try your best — this contributes to your progress! 💪"
+      },
+      { /* RETAKE TEST */
+        tags: ['retake test','redo test','take test again','repeat test','test again',
+               'can i retake','redo quiz','repeat quiz','try again test','second attempt',
+               'another attempt','ulitin ang test', 'retake quiz', 'retake exam'],
+        reply: "For test retakes, please contact your AiTECH instructor! 👨‍🏫\n\nYour instructor manages test attempts and can allow you to retake a test if needed.\n\nYou can send a concern through this chat or reach out to your instructor directly. 📞"
+      },
+      { /* TEST SCORE */
+        tags: ['test score','quiz score','my score','score result','test result','quiz result',
+               'how did i do','test grade','quiz grade','passing score','how many correct',
+               'test performance','assessment result', 'my grade', 'my scores', "what's my score"],
+        reply: "Your test scores and results are reviewed by your instructor! 📊\n\nAfter completing a test, your result contributes to your overall progress analytics on the Module page.\n\nFor detailed scoring information, please contact your AiTECH instructor. 👨‍🏫"
+      },
+      { /* FAIL TEST */
+        tags: ['fail test','failed test','test fail','wrong answers','all wrong','bad score',
+               'low score','poor performance','did not pass','did not pass test','test failed',
+               'failed quiz', 'fail quiz', 'i failed'],
+        reply: "Don't worry if you didn't do well on the test! 💪\n\nHere's what to do:\n1️⃣ Review the video again by rewatching it\n2️⃣ Take notes on the key points\n3️⃣ Contact your instructor about retaking the test\n\nRemember — learning is a process! Every attempt makes you better. 😊"
+      },
+
+      // ═══════════════════════════════════════════════════════
+      // PROGRESS & ANALYTICS
+      // ═══════════════════════════════════════════════════════
+      { /* HOW PROGRESS TRACKED */
+        tags: ['how is progress tracked','how progress works','progress tracking','track progress',
+               'progress system','how does progress work','progress explained','progress feature',
+               'how is progress calculated','what counts as progress', 'progress method', 'how progress is saved'],
+        reply: "Your progress is tracked automatically! 📊\n\nHere's how it works:\n\n🎬 Each video you complete = 25% progress\n• 0 videos = 0%\n• 1 video = 25%\n• 2 videos = 50%\n• 3 videos = 75%\n• 4 videos = 100%\n\nYou can see your progress ring and progress bars on the Module page! ✅"
+      },
+      { /* WHERE SEE PROGRESS */
+        tags: ['where see progress','where is progress','view progress','check progress',
+               'find progress','progress page','progress location','show progress',
+               'progress analytics','analytics page','progress dashboard', 'my progress', 'progress report'],
+        reply: "You can see your progress on the Module page! 📊\n\nGo to: Home → Click 'Module' in the navbar\n\nOn the Module page you'll see:\n• 📊 Overall progress ring (percentage)\n• 📈 Per-video progress bars\n• ✅ Lesson completion status\n• 📋 Current topic and status"
+      },
+      { /* PROGRESS PERCENTAGE */
+        tags: ['progress percentage','progress percent','what percent','what percentage',
+               '25 percent','50 percent','75 percent','100 percent','progress number',
+               'progress value','overall progress','total progress', 'my percentage', 'current percentage'],
+        reply: "Your overall progress percentage is based on completed videos! 🎯\n\n🔵 0% = No videos watched yet\n🟡 25% = Video 1 completed\n🟡 50% = Videos 1 & 2 completed\n🟠 75% = Videos 1, 2 & 3 completed\n🟢 100% = All 4 videos completed!\n\nEach video is worth 25% of your total progress! 💪"
+      },
+      { /* STATUS */
+        tags: ['status','my status','what is my status','not started','ongoing','finished',
+               'module status','progress status','learning status','current status',
+               'what does status mean', 'my current status', 'module status'],
+        reply: "Your module status shows your learning stage! 📋\n\n⚪ Not Started — You haven't watched any videos yet\n🟡 Ongoing — You've started but haven't finished all videos\n🟢 Finished — You've completed all 4 videos!\n\nYour status is shown on the Module page and updates automatically as you progress. 😊"
+      },
+      { /* PROGRESS NOT SAVING */
+        tags: ['progress not saving','progress lost','progress gone','lost progress',
+               'progress reset','progress disappeared','progress erased','progress deleted',
+               'missing progress','progress not recorded','no progress saved',
+               'progress issue', 'progress problem', 'my progress is gone'],
+        reply: "Oh no! Here are the possible reasons your progress disappeared: 😟\n\n• Browser cache/cookies were cleared\n• You're using a different browser or device\n• Browser is in private/incognito mode\n\nTo prevent this:\n✅ Always use the SAME browser on the SAME device\n✅ Don't use incognito/private mode\n✅ Don't clear browser history\n\nContact your instructor if the problem continues! 📞"
+      },
+      { /* IS PROGRESS SAVED */
+        tags: ['is progress saved','progress saved','auto save','automatic save','does it save',
+               'saving progress','progress save','will it save','auto saved', 'save progress', 'progress auto save'],
+        reply: "Yes! Your progress is saved automatically! ✅\n\nEvery time you watch a video or complete a test, your progress is instantly saved in your browser's local storage.\n\nImportant: Progress is saved on your specific browser and device. If you switch to a different browser or device, your progress won't be there. Always use the same browser! 😊"
+      },
+
+      // ═══════════════════════════════════════════════════════
+      // NAVIGATION & PAGES
+      // ═══════════════════════════════════════════════════════
+      { /* HOME PAGE */
+        tags: ['what is home page','home page','landing page','what is landing page',
+               'main page','homepage','what is on home','home content','what is aiosh home',
+               'dashboard', 'main dashboard', 'home'],
+        reply: "The Home page is your main dashboard after logging in! 🏠\n\nIt contains:\n• 👋 Welcome message with your name\n• 🖼️ AiTECH photo slideshow\n• 📦 Your assigned module card (click to go to Module page)\n• 💬 Chat support button (bottom left)\n\nYou can return to the Home page anytime by clicking 'Home' in the navigation bar! 😊"
+      },
+      { /* MODULE PAGE */
+        tags: ['what is module page','course page','module page','what is on module page',
+               'course content','module content page','module overview', 'module details', 'course details', 'module'],
+        reply: "The Module page shows your assigned module and progress! 📚\n\nIt contains:\n• 🖼️ Module image and description\n• 📋 Lesson list with statuses\n• 📊 Progress ring and analytics\n• 👤 Your student info\n• 🚀 Start Module button\n\nClick 'Module' in the nav bar to get there! 😊"
+      },
+      { /* ABOUT PAGE */
+        tags: ['what is about page','about page','about aiosh','about aitech','about us',
+               'about page content','what is in about','school info','portal info', 'about'],
+        reply: "The About page contains information about AiOSH and Antipolo Institute of Technology! 🏫\n\nYou can find it by clicking 'About' in the navigation bar at the top of any page. 😊"
+      },
+      { /* NAVIGATION BAR */
+        tags: ['navigation bar','navbar','nav bar','top menu','menu bar','top bar',
+               'navigation menu','site navigation','menu items','nav items','nav links', 'menu', 'nav'],
+        reply: "The Navigation Bar is at the top of every page after login! 🧭\n\nIt contains:\n• 🏠 Home — goes to the Landing page\n• 📚 Module — goes to your assigned module\n• ℹ️ About — information about AiOSH\n• 🚪 Sign Out — logs you out (asks for confirmation)\n\nThe AiTECH logo on the left also takes you back to the Home page! 😊"
+      },
+      { /* GO BACK */
+        tags: ['go back','back button','go to previous','return to','navigate back',
+               'previous page','go home','go to home','return home','back to home',
+               'back to login','return to login', 'go back to', 'return'],
+        reply: "To go back to a previous page: 🔙\n\n• Click 'Home' in the navigation bar to go to the Home page\n• Click 'Module' to go to the Module page\n• Use the breadcrumb links on the Module Lesson page\n• Click Sign Out to return to the Login page\n\nYou can navigate from any page using the top navigation bar! 😊"
+      },
+      { /* BREADCRUMB */
+        tags: ['breadcrumb','breadcrumb navigation','page path','page trail','where am i',
+               'current page','page location','navigation path', 'breadcrumbs', 'path'],
+        reply: "Breadcrumbs are the navigation trail shown at the top of the Module Lesson page! 🗺️\n\nExample: Home › Module › Scaffolding Works\n\nYou can click any part of the breadcrumb to quickly go back to that page. It helps you know exactly where you are in the portal! 😊"
+      },
+
+      // ═══════════════════════════════════════════════════════
+      // ABOUT AIOSH & AITECH
+      // ═══════════════════════════════════════════════════════
+      { /* WHAT IS AIOSH */
+        tags: ['what is aiosh','what is this website','aiosh','about aiosh','aiosh portal',
+               'what is this portal','what is this app','what is this site','purpose of aiosh',
+               'what does aiosh do','aiosh meaning','what does aiosh stand for', 'about the portal', 'aiosh info'],
+        reply: "AiOSH is the official learning portal of Antipolo Institute of Technology (AiTECH)! 🎓\n\nIt stands for AiTECH's Occupational Safety and Health Learning Portal.\n\nPurpose:\n• Provide students with OSH-aligned video lessons\n• Track student learning progress\n• Administer pre-tests and post-tests\n• Help students learn safety standards for construction work 🏗️"
+      },
+      { /* WHAT IS AITECH */
+        tags: ['what is aitech','aitech','antipolo institute','antipolo institute of technology',
+               'what is the school','school name','about school','school info','about aitech',
+               'aitech meaning','aitech stand for', 'the school', 'aitech info'],
+        reply: "AiTECH stands for Antipolo Institute of Technology! 🏫\n\nIt is a higher education institution in Antipolo City, Rizal, Philippines. AiTECH offers programs aligned with technical and vocational education, including courses on Occupational Safety and Health (OSH).\n\nAiOSH is AiTECH's official student learning portal for OSH modules. 📚"
+      },
+      { /* WHAT IS PPE */
+        tags: ['what is ppe','ppe','personal protective equipment','hard hat','safety vest',
+               'gloves','safety boots','goggles','safety gear','protective equipment',
+               'ppe meaning', 'what ppe', 'safety equipment'],
+        reply: "PPE stands for Personal Protective Equipment! 🦺\n\nIn construction safety (which your module covers), PPE includes:\n• ⛑️ Hard hat\n• 🦺 Safety vest\n• 🧤 Gloves\n• 👟 Safety boots\n• 🥽 Safety goggles\n\nProper PPE use is a key part of the OSHS standards covered in your video lessons! 💪"
+      },
+
+      // ═══════════════════════════════════════════════════════
+      // TECHNICAL ISSUES
+      // ═══════════════════════════════════════════════════════
+      { /* MOBILE COMPATIBILITY */
+        tags: ['phone','mobile','smartphone','android','iphone','ios','tablet','ipad',
+               'can i use phone','mobile friendly','works on phone','mobile version',
+               'phone compatible','use on mobile','view on phone', 'mobile app', 'phone access', 'mobile view'],
+        reply: "Yes! AiOSH is mobile-friendly! 📱\n\nYou can use it on:\n• 📱 Smartphones (Android and iPhone)\n• 📱 Tablets (iPad and Android tablets)\n• 💻 Laptops\n• 🖥️ Desktop computers\n\nThe page automatically adjusts to fit your screen size. For the best experience, we recommend using Google Chrome! 😊"
+      },
+      { /* BROWSER COMPATIBILITY */
+        tags: ['which browser','best browser','what browser','browser compatible','browser support',
+               'google chrome','firefox','microsoft edge','safari','opera','browser recommendation',
+               'supported browser', 'browser issue', 'browser problems'],
+        reply: "AiOSH works best on these browsers: 🌐\n\n✅ Google Chrome (Recommended!)\n✅ Microsoft Edge\n✅ Mozilla Firefox\n✅ Safari (for iPhone/Mac users)\n\nFor the best experience, we recommend Google Chrome. Make sure your browser is up to date! 🔄"
+      },
+      { /* PAGE NOT LOADING */
+        tags: ['page not loading','not loading','slow loading','page slow','slow page',
+               'website slow','website not loading','page not opening','cant open page',
+               'page error','loading error','page stuck','white screen','blank page',
+               'loading problem', 'page issue', 'website issue'],
+        reply: "Page not loading? Try these fixes: 🔧\n\n1️⃣ Refresh the page (press F5 or Ctrl+R)\n2️⃣ Check your internet connection\n3️⃣ Clear your browser cache (Ctrl+Shift+Delete)\n4️⃣ Try a different browser\n5️⃣ Close other tabs to free up memory\n\nIf the issue continues, contact your instructor! 📞"
+      },
+      { /* OFFLINE ACCESS */
+        tags: ['offline','no internet','no connection','without internet','works offline',
+               'can use offline','internet required','need internet','internet connection',
+               'offline mode', 'no wifi', 'internet access'],
+        reply: "AiOSH requires an internet connection for some features: 🌐\n\n✅ Works offline: Viewing pages, checking progress, login (with saved info)\n❌ Requires internet: Playing videos, loading for the first time\n\nMake sure you have a stable internet connection when watching videos for the best experience! 📶"
+      },
+      { /* CLEAR CACHE */
+        tags: ['clear cache','cache','cookies','browser data','browser history',
+               'clear browser','delete cache','clear data','browser storage', 'clear cookies', 'clear browsing data'],
+        reply: "Important note about clearing browser data! ⚠️\n\nClearing your browser cache, cookies, or local storage will DELETE your saved progress and login info in AiOSH!\n\nBefore clearing browser data:\n• Take note of your Student ID\n• Inform your instructor about your progress\n\nIf you accidentally cleared your data, contact your instructor! 📞"
+      },
+      { /* INCOGNITO MODE */
+        tags: ['incognito','private mode','private browsing','private window','incognito mode',
+               'private tab','anonymous browsing', 'incognito tab', 'private window'],
+        reply: "We recommend NOT using Incognito/Private mode for AiOSH! 🚫\n\nWhy? In incognito/private mode:\n• Your progress won't be saved after closing the window\n• Your login info won't be remembered\n• All your data is deleted when you close the tab\n\nAlways use a regular browser window for the best experience! 😊"
+      },
+      { /* DATA PRIVACY */
+        tags: ['data safe','is my data safe','data privacy','privacy','secure','security',
+               'data stored','where is data stored','who can see my data','data protection',
+               'my data', 'is it safe', 'data security'],
+        reply: "Your data privacy is important to us! 🔒\n\nHere's what you should know:\n• Your login info and progress are stored ONLY in your own browser\n• No data is sent to external servers\n• Only your instructor/admin can see your chat messages\n• Your password is never stored in plain text\n\nAiOSH is designed with student privacy in mind! 😊"
+      },
+      { /* GITHUB PAGES */
+        tags: ['github','github pages','deployed','live site','online','website url',
+               'how to access online','public site','hosted','domain','url','web address',
+               'online access', 'website'],
+        reply: "AiOSH can be accessed online through GitHub Pages! 🌐\n\nYour instructor will provide you with the website URL (usually in the format: yourusername.github.io)\n\nAll you need is:\n• A web browser\n• An internet connection\n• Your Student ID and password\n\nNo installation needed! 😊"
+      },
+
+      // ═══════════════════════════════════════════════════════
+      // CONTACT & SUPPORT
+      // ═══════════════════════════════════════════════════════
+      { /* CONTACT INSTRUCTOR */
+        tags: ['contact instructor','contact teacher','contact admin','reach instructor',
+               'how to contact','message instructor','email instructor','call instructor',
+               'talk to instructor','speak to instructor','reach out','get in touch',
+               'contact support', 'contact person', 'instructor contact'],
+        reply: "Here's how to contact your instructor: 📞\n\n1️⃣ Use this chat bubble — type your concern and it will be sent to the admin\n2️⃣ Approach your instructor directly during class\n3️⃣ Contact the AiTECH registrar's office for administrative concerns\n\nYour instructor will get back to you as soon as possible! 😊"
+      },
+      { /* SEND MESSAGE */
+        tags: ['send message','send concern','send question','message admin','message support',
+               'contact support','how to message','submit concern','report issue','report problem',
+               'how to send','sending message','submit message', 'send query', 'send a message'],
+        reply: "You're already using the right tool! 😊 Just type your concern here in this chat bubble and press Enter or click the ➤ button.\n\nYour message will be:\n✅ Saved with your name and student info\n✅ Reviewed by your instructor/admin\n✅ Responded to as soon as possible\n\nDon't be shy — ask anything! 💬"
+      },
+      { /* MESSAGE SENT */
+        tags: ['message sent','was my message sent','did my message go through','message received',
+               'concern sent','confirm message','message confirmation','message delivered', 'message status', 'sent'],
+        reply: "Yes! When you send a message in this chat, you'll see a confirmation message saying your concern was sent! ✅\n\nYour message is automatically saved with:\n• Your name\n• Your year level\n• Your student ID\n• The time you sent it\n\nYour instructor will review it and get back to you! 😊"
+      },
+      { /* WHO IS ADMIN */
+        tags: ['who is admin','who is instructor','who manages','who runs','who is in charge',
+               'administrator','portal admin','site admin','who created','who made aiosh',
+               'admin contact', 'instructor info'],
+        reply: "The AiOSH portal is managed by your AiTECH instructor/administrator! 👨‍🏫\n\nThey are responsible for:\n• Managing student accounts\n• Reviewing your progress\n• Reading your chat messages and concerns\n• Updating module content\n\nFor specific instructor information, please check with your school! 🏫"
+      },
+
+      // ═══════════════════════════════════════════════════════
+      // SPECIFIC MODULE PAGE (module-specific.html)
+      // ═══════════════════════════════════════════════════════
+      { /* DROPDOWN/ACCORDION */
+        tags: ['dropdown','accordion','expand','collapse','open dropdown','click dropdown',
+               'video dropdown','lesson dropdown','how to open video','video section',
+               'expand section','show video', 'open lesson', 'expand lesson'],
+        reply: "The video dropdowns are expandable sections for each video! 📂\n\nTo open a video:\n1️⃣ Click on the dropdown header (video title)\n2️⃣ It will expand to show the intro, video, and test button\n3️⃣ Click again to collapse it\n\nNote: Locked videos cannot be opened until they are unlocked! 🔒"
+      },
+      { /* PROGRESS TRACKER */
+        tags: ['progress tracker','tracker bar','step tracker','step indicator','lesson tracker',
+               'video tracker','progress steps','step 1 2 3 4','circle tracker', 'progress indicator', 'tracker'],
+        reply: "The Progress Tracker at the top of the Module Lesson page shows your journey! 🗺️\n\nIt has 4 steps (one per video):\n• ⚪ Grey = Locked/Not yet started\n• 🔵 Blue/Purple = Currently active\n• 🟢 Green ✓ = Completed!\n\nIt updates automatically as you progress through the videos! 😊"
+      },
+
+      // ═══════════════════════════════════════════════════════
+      // SLIDESHOW & HOME PAGE FEATURES
+      // ═══════════════════════════════════════════════════════
+      { /* SLIDESHOW */
+        tags: ['slideshow','slide show','photo slideshow','image slideshow','slides',
+               'rotating images','what is slideshow','home slideshow','login slideshow', 'pictures', 'images'],
+        reply: "The slideshow displays AiTECH photos and highlights! 🖼️\n\nIt appears in two places:\n• Login page (right side)\n• Home/Landing page (main content area)\n\nThe slides rotate automatically every 4 seconds. You can also click the dots at the bottom to manually navigate between slides! 😊"
+      },
+      { /* MODULE CARD */
+        tags: ['module card','course card','module block','what is module card','module on home',
+               'home page module','click module card','module box', 'course box', 'module on home page'],
+        reply: "The Module Card on the Home page is a quick shortcut to your assigned module! 📦\n\nIt shows:\n• Your module title (Scaffolding or RSW)\n• A brief description\n• Number of videos\n\nJust click on it and it will take you directly to the Module page! 😊"
+      },
+
+      // ═══════════════════════════════════════════════════════
+      // MISCELLANEOUS / GENERAL
+      // ═══════════════════════════════════════════════════════
+      { /* FREE/COST */
+        tags: ['free','cost','payment','fee','subscription','paid','buy','purchase',
+               'how much','price','bayad','libre','pera', 'free of charge', 'is it free'],
+        reply: "AiOSH is completely FREE for AiTECH students! 🎉\n\nNo payment, subscription, or fee is required. Just use your Student ID and password provided by AiTECH to access all learning materials! 😊"
+      },
+      { /* CERTIFICATE */
+        tags: ['certificate','completion certificate','finish certificate','done certificate',
+               'certificate of completion','award','badge','achievement', 'diploma', 'certification'],
+        reply: "For information about completion certificates or awards, please contact your AiTECH instructor! 🏆\n\nYour progress is tracked in the portal and your instructor can provide official recognition of your module completion. 😊"
+      },
+      { /* DEADLINE */
+        tags: ['deadline','due date','submission deadline','when to finish','time limit',
+               'expiry','module deadline','assessment deadline','when is due', 'due date', 'deadlines'],
+        reply: "Deadlines and due dates are set by your AiTECH instructor! 📅\n\nPlease check with your instructor for:\n• Module completion deadlines\n• Test submission dates\n• Assessment schedules\n\nWe recommend finishing your videos and tests as early as possible! ⏰"
+      },
+      { /* GROUP/CLASSMATE */
+        tags: ['groupmate','group','classmate','other students','study group','team',
+               'collaborate','group work','with friends','partner', 'group study', 'classmates'],
+        reply: "AiOSH is designed for individual student learning! 👤\n\nEach student has their own progress tracking based on their Student ID and browser.\n\nFor group activities or study sessions, please coordinate with your AiTECH instructor! 😊"
+      },
+      { /* NOTES */
+        tags: ['notes','take notes','download notes','save notes','note taking',
+               'study notes','learning notes','lesson notes','module notes', 'note', 'take note'],
+        reply: "You can take notes while watching the videos! 📝\n\nWe suggest:\n• 📓 Using a physical notebook\n• 📱 Using your phone's notes app\n• 💻 Using a text editor on your computer\n\nKey points to note: safety procedures, equipment names, and OSHS standards covered in each video! 💡"
+      },
+      { /* ERROR/BUG */
+        tags: ['error','bug','glitch','problem','issue','not working','broken','crash',
+               'something wrong','weird','unexpected','malfunction', 'error message', 'bug report', 'problem with'],
+        reply: "Encountering an error or bug? Here's what to do: 🔧\n\n1️⃣ Refresh the page (press F5)\n2️⃣ Try logging out and logging back in\n3️⃣ Try a different browser\n4️⃣ Clear your browser cache\n5️⃣ If the issue persists, use this chat to describe the problem to your instructor!\n\nWhen reporting, please describe: what page you were on and what you were doing when the error occurred. 😊"
+      },
+      { /* UPDATE */
+        tags: ['update','new version','new update','latest version','updated','changes',
+               'what\'s new','new features','improvements', 'version', 'new update'],
+        reply: "Updates and new features are managed by your AiTECH instructor/admin! 🔄\n\nIf there are new updates to the portal, your instructor will inform you. If you notice something has changed, it's likely an improvement to help your learning experience! 😊"
+      },
+      { /* LANGUAGE */
+        tags: ['language','filipino','tagalog','english','medium of instruction','language used',
+               'what language','portal language', 'tagalog language', 'english language', 'what language is this'],
+        reply: "AiOSH is primarily in English! 🇵🇭🇬🇧\n\nHowever, your instructor may present some content in Filipino/Tagalog depending on the lesson.\n\nThis chat support can understand both English and Filipino questions! Magtanong ka lang! 😊"
+      },
+    ];
+
+    // ── SMART MATCHING FUNCTION ───────────────────────────────
+    function getBotReply(input) {
+      const msg = input.toLowerCase()
+        .replace(/[?!.,;:'"]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+      let bestMatch = null;
+      let bestScore = 0;
+
+      for (const entry of KB) {
+        let score = 0;
+        for (const tag of entry.tags) {
+          if (msg.includes(tag)) {
+            // Longer tag match = higher score (more specific)
+            score = Math.max(score, tag.length);
+          }
+        }
+        if (score > bestScore) {
+          bestScore = score;
+          bestMatch = entry;
+        }
+      }
+
+      if (bestMatch && bestScore >= 2) {
+        return bestMatch.reply;
+      }
+
+      // Fallback responses
+      const fallbacks = [
+        "I'm not sure about that one! 😊 Could you rephrase your question? You can ask me about:\n\n• Login and account issues\n• Your module and videos\n• Tests and progress\n• Technical problems\n• Contact and support",
+        "Hmm, I don't have a specific answer for that! 🤔 Try asking your question differently, or contact your AiTECH instructor for more specific concerns. 📞",
+        "I couldn't find an answer for that! 😅 Please try rephrasing your question or use this chat to send your concern directly to the admin. Your message will be reviewed! 💬",
+        "That's a bit outside what I know! 🤖 For specific or complex concerns, please contact your AiTECH instructor directly. I'm best at answering questions about the AiOSH portal! 😊"
+      ];
+      return fallbacks[Math.floor(Math.random() * fallbacks.length)];
+    }
+
+    // ── CHAT UI FUNCTIONS ─────────────────────────────────────
+    function toggleChat() {
+      const win = document.getElementById('chat-window');
+      chatOpened = !chatOpened;
+      win.classList.toggle('open', chatOpened);
+      document.querySelectorAll('.chat-bubble-btn, .chat-close-btn').forEach(b => {
+        b.setAttribute('aria-expanded', chatOpened ? 'true' : 'false');
+      });
+      if (chatOpened && !greetingShown) {
+        greetingShown = true;
+        showGreeting();
+      }
+      if (chatOpened) {
+        hideBadge();
+        setTimeout(() => {
+          const msgs = document.getElementById('chat-messages');
+          msgs.scrollTop = msgs.scrollHeight;
+        }, 100);
+      }
+    }
+
+    function showGreeting() {
+      const name = sessionStorage.getItem('aiosh_session_name')
+                || localStorage.getItem('aiosh_name')
+                || 'there';
+      showTyping();
+      setTimeout(() => {
+        hideTyping();
+        appendAdminMsg('Hi, ' + name + '! 👋 I am the AiOSH Virtual Assistant. I can answer questions about the portal, your modules, videos, tests, progress, and more!');
+        // end greeting
+      }, 800);
+    }
+
+    function showTyping() {
+      document.getElementById('chat-typing').classList.add('show');
+      scrollChat();
+    }
+    function hideTyping() {
+      document.getElementById('chat-typing').classList.remove('show');
+    }
+    function scrollChat() {
+      const msgs = document.getElementById('chat-messages');
+      setTimeout(() => msgs.scrollTop = msgs.scrollHeight, 50);
+    }
+    function getTime() {
+      return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+    function appendAdminMsg(text) {
+      const msgs = document.getElementById('chat-messages');
+      const div  = document.createElement('div');
+      div.className = 'chat-msg admin';
+      div.innerHTML = '<div class="chat-msg-bubble">' + text.replace(/\n/g,'<br>') + '</div><div class="chat-msg-time">' + getTime() + '</div>';
+      msgs.appendChild(div);
+      scrollChat();
+    }
+    function appendUserMsg(text) {
+      const msgs = document.getElementById('chat-messages');
+      const div  = document.createElement('div');
+      div.className = 'chat-msg user';
+      div.innerHTML = '<div class="chat-msg-bubble">' + text + '</div><div class="chat-msg-time">' + getTime() + '</div>';
+      msgs.appendChild(div);
+      scrollChat();
+    }
+    function sendMessage() {
+      const input = document.getElementById('chat-input');
+      const text  = input.value.trim();
+      if (!text) return;
+
+      appendUserMsg(text);
+      input.value = '';
+      input.style.height = 'auto';
+
+      // Save to localStorage for admin
+      const name = sessionStorage.getItem('aiosh_session_name') || localStorage.getItem('aiosh_name') || 'Student';
+      const year = sessionStorage.getItem('aiosh_session_year') || localStorage.getItem('aiosh_year') || '-';
+      const id   = sessionStorage.getItem('aiosh_session_id')   || localStorage.getItem('aiosh_id')   || '-';
+      const existing = JSON.parse(localStorage.getItem('aiosh_messages') || '[]');
+      existing.push({ name, year, id, message: text, timestamp: new Date().toISOString(), read: false });
+      localStorage.setItem('aiosh_messages', JSON.stringify(existing));
+
+      // Simulate typing delay then reply
+      showTyping();
+      setTimeout(() => {
+        hideTyping();
+        const reply = getBotReply(text);
+        appendAdminMsg(reply);
+      }, 800 + Math.random() * 500);
+    }
+    function handleChatKey(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    }
+    function autoResize(el) {
+      el.style.height = 'auto';
+      el.style.height = Math.min(el.scrollHeight, 90) + 'px';
+    }
+    function hideBadge() {
+      document.getElementById('chat-badge').classList.remove('show');
+    }
+
+
+  </script>
+
+  <!-- ─── CHAT BUBBLE ─── -->
+  <button class="chat-bubble-btn" onclick="toggleChat()" title="Send a concern" aria-label="Open chat support" aria-expanded="false">
+    💬
+    <div class="chat-badge" id="chat-badge"></div>
+  </button>
+
+  <div class="chat-window" id="chat-window" role="dialog" aria-label="Chat support">
+    <!-- Header -->
+    <div class="chat-header">
+      <div class="chat-header-avatar">🎓</div>
+      <div class="chat-header-info">
+        <div class="chat-header-name">AiOSH Support</div>
+        <div class="chat-header-status"><span class="status-dot"></span> Admin is available</div>
+      </div>
+      <button class="chat-close-btn" onclick="toggleChat()" aria-label="Close chat support" aria-expanded="false">✕</button>
+    </div>
+
+    <!-- Messages -->
+    <div class="chat-messages" id="chat-messages">
+      <!-- Populated by JS -->
+    </div>
+    <div class="chat-typing" id="chat-typing">
+      <div class="typing-dot"></div>
+      <div class="typing-dot"></div>
+      <div class="typing-dot"></div>
+    </div>
+
+    <!-- Input -->
+    <div class="chat-input-row">
+      <textarea
+        class="chat-input" id="chat-input"
+        placeholder="Type your concern here…"
+        rows="1"
+        onkeydown="handleChatKey(event)"
+        oninput="autoResize(this)"
+      ></textarea>
+      <button class="chat-send-btn" onclick="sendMessage()">➤</button>
+    </div>
+  </div>
+
+</body>
+</html>
