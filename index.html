@@ -147,6 +147,48 @@
       color: #fff;
     }
 
+    /* ─── PASSWORD SHOW / HIDE (EYE) TOGGLE ─── */
+    .password-wrap {
+      position: relative;
+    }
+    .password-wrap input#inp-pass {
+      padding-right: 44px;
+    }
+    .eye-btn {
+      position: absolute;
+      top: 50%;
+      right: 8px;
+      transform: translateY(-50%);
+      width: 32px;
+      height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      border-radius: 8px;
+      color: rgba(255, 255, 255, 0.55);
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: background 0.2s, color 0.2s;
+    }
+    .eye-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
+    .eye-icon-slash {
+      display: none;
+    }
+    .eye-btn.active {
+      color: #a5b4fc;
+    }
+    .eye-btn.active .eye-icon-open {
+      display: none;
+    }
+    .eye-btn.active .eye-icon-slash {
+      display: inline-flex;
+    }
+
     .mode-switch {
       display: flex;
       gap: 8px;
@@ -369,7 +411,23 @@
       <!-- Password -->
       <div class="form-group">
         <label for="inp-pass">Password</label>
-        <input type="password" id="inp-pass" placeholder="••••••••" autocomplete="current-password" />
+        <div class="password-wrap">
+          <input type="password" id="inp-pass" placeholder="••••••••" autocomplete="current-password" />
+          <button type="button" class="eye-btn" id="eye-btn" aria-label="Show password" title="Show password">
+            <!-- Eye (open) — password hidden -->
+            <svg class="eye-icon-open" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            <!-- Eye with slash — password visible -->
+            <svg class="eye-icon-slash" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"></path>
+              <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"></path>
+              <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"></path>
+              <line x1="1" y1="1" x2="23" y2="23"></line>
+            </svg>
+          </button>
+        </div>
         <p class="pass-hint" id="pass-hint">Create a password with 6+ characters, 1 uppercase letter, and 1 symbol (e.g. . , ! @).</p>
       </div>
 
@@ -393,6 +451,21 @@
 
   <script>
     let currentMode = 'signup';
+
+    // ─── PASSWORD SHOW / HIDE TOGGLE ──────────────────────────
+    const eyeBtn = document.getElementById('eye-btn');
+    const passInput = document.getElementById('inp-pass');
+    if (eyeBtn && passInput) {
+      eyeBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const show = passInput.type === 'password';
+        passInput.type = show ? 'text' : 'password';
+        eyeBtn.classList.toggle('active', show);
+        eyeBtn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+        eyeBtn.setAttribute('title', show ? 'Hide password' : 'Show password');
+        passInput.focus();
+      });
+    }
 
     const studentIdPattern = /^\d{4}-\d{4}$/;
     const uppercasePattern = /[A-Z]/;
