@@ -476,7 +476,7 @@
       <li><a href="course.html">Modules</a></li>
       <li><a href="module-specific.html">Lessons</a></li>
       <li><a href="quiz.html" class="active">Quiz</a></li>
-      <li><button class="signout-btn">Sign out</button></li>
+      <li><button class="signout-btn" onclick="sessionStorage.clear(); window.location.href='index.html'">Sign out</button></li>
     </ul>
   </nav>
 
@@ -658,8 +658,8 @@
         '0': [
           { question: 'What is scaffolding primarily designed to provide?', choices: ['Permanent structural support', 'Safe access and working platforms at height', 'Permanent storage space', 'Temporary building walls'], answer: 'B' },
           { question: 'Which construction activities commonly use scaffolding?', choices: ['Masonry, painting, plastering, and installation', 'Only excavation', 'Only road construction', 'Only demolition'], answer: 'A' },
-          { question: 'Which standards are identified as regulating scaffolding practices in the Philippines?', choices: ['TESDA NC II, DOLE OSHS, and DPWH Item 902', 'Traffic Code only', 'Electrical Code only', 'Fire Code only'], answer: 'A' },
-          { question: 'What must every scaffold be made of?', choices: ['Lightweight materials only', 'Sound construction and materials', 'Wood only', 'Steel only'], answer: 'B' },
+          { question: 'Which statement best describes the role of TESDA standards, DOLE Occupational Safety and Health requirements, and DPWH specifications in scaffolding work?', choices: ['They serve identical regulatory functions.', 'They provide different requirements and guidance applicable to training, safety, and construction work.', 'They apply only to scaffold manufacturers.', 'They are used only during project closeout.'], answer: 'B' },
+          { question: 'Which materials and components should be used in scaffold construction?', choices: ['Any available material regardless of condition', 'Lightweight materials only', 'Sound, suitable, and properly maintained materials capable of supporting intended loads', 'Previously damaged materials that appear usable'], answer: 'C' },
           { question: 'What is one major hazard associated with scaffolding?', choices: ['Falling objects', 'Computer failure', 'Excessive lighting', 'Vehicle maintenance'], answer: 'A' },
           { question: 'What should scaffolders do before erection?', choices: ['Conduct a site inspection', 'Load the scaffold', 'Remove all braces', 'Remove all guardrails'], answer: 'A' },
           { question: 'Which PPE protects against falling objects?', choices: ['Safety shoes', 'Hard hat', 'Gloves', 'Safety harness'], answer: 'B' },
@@ -681,21 +681,21 @@
         { question: 'Which scaffold is commonly used for brick masonry?', choices: ['Single scaffolding', 'Double scaffolding', 'Suspended scaffolding', 'Trestle scaffolding'], answer: 'A' },
         { question: 'Which scaffold is commonly used for stone masonry and provides extra stability?', choices: ['Single scaffolding', 'Double scaffolding', 'Trestle scaffolding', 'Suspended scaffolding'], answer: 'B' },
         { question: 'Which scaffold is supported by needles fixed in the building structure?', choices: ['Cantilever', 'Trestle', 'Suspended', 'Steel'], answer: 'A' },
-        { question: 'Which scaffold is suitable for façade work?', choices: ['Single', 'Suspended', 'Trestle', 'Double'], answer: 'B' },
-        { question: 'What is the maximum height for a trestle scaffold unless designed by a structural engineer?', choices: ['2 m', '5 m', '10 m', '20 m'], answer: 'B' },
+        { question: 'Which factor should be considered when selecting a scaffold system for façade work?', choices: ['The color of the scaffold', 'The nature of the work, height, site conditions, and access requirements', 'The brand of scaffold only', 'Worker preference alone'], answer: 'B' },
+        { question: 'Which scaffold type is commonly used for interior maintenance and low-level work where mobility and ease of setup are important?', choices: ['Trestle scaffolding', 'Suspended scaffolding', 'Cantilever scaffolding', 'Ringlock scaffolding'], answer: 'A' },
         { question: 'Which modular system uses wedge fittings?', choices: ['Ringlock', 'Cup-Lock', 'Kwikstage', 'Tube & Coupler'], answer: 'C' },
         { question: 'Which system uses rosette connectors that allow multiple angles?', choices: ['Kwikstage', 'Ringlock', 'Cup-Lock', 'Tube & Coupler'], answer: 'B' },
         { question: 'What should be considered when selecting a scaffold type?', choices: ['Height and load requirements', 'Scaffold color', 'Brand preference only', 'Worker preference only'], answer: 'A' }
       ],
         // ── SCAFFOLDING MODULE 4 — Scaffold Erection and Dismantling ──
       '3': [
-        { question: 'What is the purpose of base plates?', choices: ['To distribute load evenly on the ground', 'To connect standards', 'To support guardrails', 'To secure ladders'], answer: 'A' },
-        { question: 'What is the purpose of sole boards?', choices: ['To support toe boards', 'To prevent sinking on soft soil', 'To connect ledgers', 'To provide access'], answer: 'B' },
-        { question: 'Which component provides the main vertical support?', choices: ['Ledger', 'Transom', 'Standard', 'Brace'], answer: 'C' },
-        { question: 'Which component connects standards horizontally?', choices: ['Ledger', 'Transom', 'Sole board', 'Guardrail'], answer: 'A' },
-        { question: 'What is the function of transoms?', choices: ['To provide vertical support', 'To support platform boards', 'To prevent falling objects', 'To provide access'], answer: 'B' },
-        { question: 'What is the primary function of braces?', choices: ['To ensure scaffold stability', 'To store materials', 'To provide lighting', 'To measure the scaffold'], answer: 'A' },
-        { question: 'What prevents tools and materials from falling from platforms?', choices: ['Standards', 'Toe boards', 'Sole boards', 'Ladders'], answer: 'B' },
+        { question: 'What is the primary purpose of a base plate in a scaffold system?', choices: ['To help distribute scaffold loads from the standards onto the supporting surface', 'To support guardrails', 'To provide worker access', 'To secure ladders'], answer: 'A' },
+        { question: 'What is the primary purpose of a sole board when required by site conditions?', choices: ['To prevent excessive settlement by spreading the scaffold load on the ground', 'To support toe boards', 'To connect ledgers', 'To support ladders'], answer: 'A' },
+        { question: 'Which scaffold component serves as the principal vertical load-bearing member?', choices: ['Ledger', 'Transom', 'Standard', 'Brace'], answer: 'C' },
+        { question: 'What is the function of a ledger in a scaffold structure?', choices: ['To connect standards horizontally and help support the scaffold framework', 'To support ladders', 'To prevent tools from falling', 'To spread loads onto the ground'], answer: 'A' },
+        { question: 'What is the primary function of transoms?', choices: ['To provide vertical support', 'To support working platforms and scaffold boards', 'To serve as fall protection', 'To stabilize the ground'], answer: 'B' },
+        { question: 'Why are braces installed in a scaffold system?', choices: ['To improve structural stability and resist movement', 'To store materials', 'To provide access', 'To increase working space'], answer: 'A' },
+        { question: 'What is the purpose of toe boards on scaffold platforms?', choices: ['To prevent tools, materials, and debris from falling from the platform', 'To support standards', 'To support ledgers', 'To increase platform height'], answer: 'A' },
         { question: 'How should scaffolding be dismantled?', choices: ['Randomly', 'From bottom to top', 'Systematically from top to bottom', 'By removing braces first'], answer: 'C' }
       ]
       }
